@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/fond"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:layout_height="@dimen/bar_height"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:background="@drawable/border" >
+
+        <ImageButton
+            android:id="@+id/button_menu"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            style="@style/buttonStyle"
+            android:src="@drawable/ic_action_overflow"
+            android:background="@color/fond_barre_menu"
+            android:contentDescription="@string/string_drawable_menu_overflow" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:background="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:textSize="@dimen/bar_editText_text_size"
+            android:textColor="@color/white"
+            android:text="@string/string_product_add" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/photo_produit_imageview"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/string_photo_produit"
+            android:cropToPadding="false"
+            android:src="@drawable/no_photo"
+            android:background="@drawable/border_image" />
+
+        <EditText
+            android:id="@+id/name_product"
+            style="@style/editTextStyle"
+            android:layout_width="@dimen/dimension_editText"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:hint="@string/string_nomProduit"
+            android:inputType="text"
+            android:textColorHint="@color/text" />
+
+        <EditText
+            android:id="@+id/name_manufacturer"
+            style="@style/editTextStyle"
+            android:layout_width="@dimen/dimension_editText"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:hint="@string/string_nomFabricant"
+            android:inputType="text"
+            android:textColorHint="@color/text" />
+
+        <EditText
+            android:id="@+id/product_description"
+            style="@style/editTextStyle"
+            android:layout_width="@dimen/dimension_editText"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:inputType="text"
+            android:hint="@string/string_description2"
+            android:textColorHint="@color/text" />
+
+        <EditText
+            android:id="@+id/product_price"
+            style="@style/editTextStyle"
+            android:layout_width="@dimen/dimension_editText"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:inputType="text"
+            android:hint="@string/string_prix_euros"
+            android:textColorHint="@color/text" />
+
+        <CheckBox
+            android:id="@+id/checkbox_promotion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/text"
+            android:textSize="14sp"
+            android:text="@string/string_promotion" />
+
+        <Button
+            android:id="@+id/button_search_shop"
+            style="@style/buttonStyle"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/mybutton"
+            android:text="@string/string_recherche_magasin"
+            android:textSize="16sp"/>
+
+        <Button
+            android:id="@+id/button_add_product"
+            style="@style/buttonStyle"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/mybutton"
+            android:text="@string/string_product_add"
+            android:textSize="16sp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,116 @@
+doctype html
+html
+	include inc/head
+	style.
+		body { padding-bottom: 70px; }
+	body
+		include inc/header
+		style.
+			.jumbotron {
+				border-radius: 0px;
+				Background-color: #5cb85c;
+			} li.coucou {
+				font-size: 17px;
+				font-weight: normal;
+				line-height: 1em;
+			} li > a {
+				color:#5cb85c;
+			} .bienoubien {
+				color:#5cb85c;
+			} .bienoubien > .row {
+				height : 50px;
+			} .btn-group{
+				bottom: 15px;
+				position: relative;
+				top: 25px;
+			} .thumbnail > img {
+				width : 150px;
+				height : 150px;
+			}
+		div(data-spy="affix").col-lg-3
+			ul.nav.nav-tabs
+				li.active: a(href="#list",data-toggle="tab") List
+			div.tab-content
+				.tab-pane.active#list
+					ul.nav.nav-pills.nav-stacked
+						- for coucou, i in results.lists
+							li(id="lipour#{coucou.title.replace(/ /g, '_')}").coucou
+								a(href="#sec#{coucou.title.replace(/ /g, '_')}")
+									span.glyphicon.glyphicon-list-alt
+									|    #{coucou.title}
+						li.coucou
+							a(href="#", data-toggle="modal", data-target="#ModalPut", onClick="refresh();")
+								span.glyphicon.glyphicon-plus
+								|    Nouvelle liste
+		.container.col-lg-9.col-lg-offset-3
+			- each list, i in results.lists
+				.container(id="container#{list.title.replace(/ /g, '_')}").col-lg-12
+					.container.col-lg-12.bienoubien
+						.row
+							.container.col-lg-9
+								h1(id="sec#{list.title.replace(/ /g, '_')}")= list.title
+							.container.btn-group.col-lg-2.col-lg-offset-1
+								span.btn.btn-success.btn-sm: span.glyphicon.glyphicon-search
+								span(onclick="nameListChange(\'#{list.title.replace(/ /g, '_')}\');").btn.btn-warning.btn-sm: span.glyphicon.glyphicon-pencil
+								span(onclick="nameListDelete(\'#{list.title.replace(/ /g, '_')}\');").btn.btn-danger.btn-sm: span.glyphicon.glyphicon-remove
+						hr
+					- each product, i in list.products
+						div(id="product#{list.title.replace(/ /g, '_') + '-' + product.ean}").container.col-lg-3
+							.thumbnail
+								button(type="button", style="position:absolute", aria-hidden="true", onclick="supProduct(\'#{list.title.replace(/ /g, '_')}\', \'#{product.ean}\')").close &times;
+								img(src="/productImage/#{product.img}/#{product.ean}.jpg", onerror="this.src='/img/vasi.png'", alt="Responsive image", data-toggle="tooltip", data-placement="left", title="#{product.name}")
+								.caption
+									- if (product.name.length > 22)
+										h5= (product.name).toLowerCase().substring(0, 22) + "..."
+									- else
+										h5= product.name.toLowerCase()
+									p
+										small= product.bname
+									.row
+										.container.col-lg-5
+										.input-group.col-lg-6
+											input(type="number", min="1", max="30", value="#{product.amount}", id="amount#{list.title.replace(/ /g, '_')}#{product.ean}").form-control
+											span.input-group-btn
+												button(type="button", onCLick="saveamount(\'#{list.title.replace(/ /g, '_')}\', \'#{product.ean}\')").btn.btn-success
+													span.glyphicon.glyphicon-save
+		div(tabindex="-1", role="dialog", aria-labelledby="MLPut", aria-hidden="true")#ModalPut.modal.fade
+			.modal-dialog
+				.modal-content
+					.modal-header
+						button(type="button", data-dismiss="modal", aria-hidden="true").close &times;
+						h4#MLPut.modal-title Ajouter une liste
+					.modal-body
+						span#ModalSpanPut
+						.form-group
+							label(for="name").col-lg-3.control-label Nom de la liste
+							.col-lg-4
+								input(type="text", name="name", placeholder="Ex: coucou...")#ModalInputPut.form-control
+					.modal-footer
+						button(type="button", data-dismiss="modal").btn.btn-default Fermer
+						button(type="button", onClick="addList();").btn.btn-primary Ajouter
+		div(tabindex="-1", role="dialog", aria-labelledby="MLDel", aria-hidden="true")#ModalDel.modal.fade
+			.modal-dialog
+				.modal-content
+					.modal-header
+						button(type="button", data-dismiss="modal", aria-hidden="true").close &times;
+						h4#MLDel.modal-title Suppression
+					.modal-footer
+						button(type="button", data-dismiss="modal").btn.btn-default Fermer
+						button(type="button", onclick="supList();").btn.btn-danger Supprimer
+		div(tabindex="-1", role="dialog", aria-labelledby="MLChange", aria-hidden="true")#ModalChange.modal.fade
+			.modal-dialog
+				.modal-content
+					.modal-header
+						button(type="button", data-dismiss="modal", aria-hidden="true").close &times;
+						h4#MLChange.modal-title Changement de nom
+					.modal-body
+						span#ModalSpanChange
+						.form-group
+							label(for="name").col-lg-3.control-label Nouveau nom
+							.col-lg-4
+								input(type="text", name="name", placeholder="Ex: coucou...")#ModalInputChange.form-control
+					.modal-footer
+						button(type="button", data-dismiss="modal").btn.btn-default Fermer
+						button(type="button", onclick="changeList();").btn.btn-warning Renommer
+		include inc/script
+		script(type="text/javascript", src="/js/jquery-list.js")

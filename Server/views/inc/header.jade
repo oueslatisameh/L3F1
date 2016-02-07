@@ -1,0 +1,44 @@
+nav(role="navigation").navbar.navbar-default.navbar-inverse.navbar-fixed-top#navtop
+	.container-fluid
+		.navbar-header
+			button(type="button", data-toggle="collapse", data-target="#bs-example-navbar-collapse-1").navbar-toggle
+				span.sr-only Toggle navigation
+				span.icon-bar
+				span.icon-bar
+				span.icon-bar
+			a(href="/").navbar-brand
+				img(src="/img/header.ico")
+				| ScanOID
+		#bs-example-navbar-collapse-1.collapse.navbar-collapse
+			if co
+				ul.nav.navbar-nav
+					li: a(href="/") Accueil
+					li: a(href="/list") Listes de course
+					li: a(href="/card") Cartes de fidélité
+					li: a(href="/favorite/address") Adresses favorites
+				ul.nav.navbar-nav.navbar-right
+					li.dropdown
+						a(href="#", data-toggle="dropdown").dropdown-toggle
+							|Compte
+							b.caret
+						ul.dropdown-menu
+							li: a(href="/account") Profil
+							li: a(href="/logout") Déconnexion
+							li.divider
+							li: a(href="/") Application Android
+							li: a(href="/about") A propos
+							li.divider
+							li: a(href="/") Liens utiles
+				form(role="search", action="/product", method="get").navbar-form.navbar-right
+					.form-group
+						input(type="text", name="product", placeholder="Ex : Chamonix...", list="lforproduct")#lookingforproduct.form-control
+						datalist#lforproduct
+					button(type="submit").btn.btn-success Chercher
+			else
+				ul.nav.navbar-nav
+					li.active: a(href="/") Accueil
+					li: a(href="/login") Se connecter
+					li: a(href="/registration") S'inscrire
+br
+br
+br

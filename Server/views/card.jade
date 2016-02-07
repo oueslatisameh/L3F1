@@ -1,0 +1,75 @@
+doctype
+html
+	include inc/head
+	body
+		include inc/header
+		include inc/script
+		script(type="text/javascript", src="/js/jquery-card.js")
+		script(type="text/javascript", src="/js/jquery-barcode.js")
+		.container.col-lg-6.col-xs.12
+			.panel-group#accordion
+				for card, i in results
+					.panel.panel-default
+						.panel-heading
+							h4.panel-title
+								a(data-toggle="collapse", data-parent="#accordion", href="#collapse#{i}") #{card.name}
+						div(id="collapse#{i}", class= i == 0 ? "in" : "").panel-collapse.collapse
+							.panel-body
+								.container.col-lg-8.col-xs-12
+									div(id="bcTarget#{i}")
+									script.
+										$("#bcTarget#{i}").barcode("#{card.code}", "ean#{card.length}",{barWidth : 3, barHeight : 100});
+								.container.col-lg-4.col-xs-12
+									button(data-toggle="modal",data-target="#ModalPut#{i}").btn.btn-warning.col-lg-12.col-xs-12 modifier
+									div(tabindex="-1", role="dialog", aria-labelledby="ModalLabelPut#{i}", aria-hidden="true", id="ModalPut#{i}").modal.fade
+										.modal-dialog
+											.modal-content
+												.modal-header
+													button(type="button", data-dismiss="modal", aria-hidden="true").close &times;
+													h4(id="ModalLabelPut#{i}").modal-title Modifier
+												.modal-body
+													span(id="modify#{i}")
+													.form-group
+														label(for="Code#{i}").col-lg-3.control-label Nouveau code
+														.col-lg-4
+															input(type="text", name="email", placeholder="Ex: 020323...", id="Code#{i}").form-control
+												.modal-footer
+													button(type="button", data-dismiss="modal").btn.btn-default Fermer
+													button(onClick="changeCard(\'#{card.bsin}\',\'#{i}\')").btn.btn-primary Modifier
+									br
+									br
+									button(data-toggle="modal",data-target="#ModalDel#{i}", onClick="refreshCard(\"del\", \"#{i}\")").btn.btn-danger.col-lg-12.col-xs-12 supprimer
+									div(tabindex="-1", role="dialog", aria-labelledby="ModalLabelDel#{i}", aria-hidden="true", id="ModalDel#{i}").modal.fade
+										.modal-dialog
+											.modal-content
+												.modal-header
+													button(type="button", data-dismiss="modal", aria-hidden="true").close &times;
+													h4(id="ModalLabelDel#{i}").modal-title Suppression
+												div(id="BodyDel#{i}").modal-body
+												.modal-footer
+													button(type="button", data-dismiss="modal").btn.btn-default Fermer
+													button(type="button", onClick="supCard(\"#{card.name.replace(/ /g, '_')}\", \"#{i}\");").btn.btn-primary Supprimer
+		.container.col-lg-6.col-xs-12
+			.panel.panel-default
+				.panel-heading
+					.panel-title Enregistrer une nouvelle carte
+					span#createCardSpan
+				.panel-body
+					.container.col-lg-8.col-xs-12#divCardName
+						.form-group
+							label(for="createCardName").col-lg-3.control-label Nom
+							.col-lg-9
+								input(type="text", name="name", placeholder="Ex: Carrefour", id="createCardName").form-control
+						.form-group
+							label(for="createCardCode").col-lg-3.control-label code
+							.col-lg-9
+								input(type="text", name="code", placeholder="longueur 8 ou 13", id="createCardCode").form-control
+					.container.col-lg-4.col-xs-12
+						.container.col-lg-12.col-xs-12
+							.list-group#listCreateCard
+						button(type="button", onClick="createCard();").btn.btn-primary.col-lg-12.col-xs-12
+							span.glyphicon.glyphicon-plus
+							|   
+							| Ajouter la carte
+		script.
+			searchBrand();

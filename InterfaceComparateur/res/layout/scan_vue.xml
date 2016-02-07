@@ -1,0 +1,91 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_height="@dimen/bar_height"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:background="@drawable/border" >
+
+        <ImageButton
+            android:id="@+id/button_menu"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            style="@style/buttonStyle"
+            android:src="@drawable/ic_action_overflow"
+            android:background="@color/fond_barre_menu"
+            android:contentDescription="@string/string_drawable_menu_overflow" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:background="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:textSize="@dimen/bar_editText_text_size"
+            android:textColor="@color/white"
+            android:text="@string/string_scan" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.80"
+        android:layout_gravity="center_horizontal">
+        <include layout="@layout/capture" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal" >
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".70">
+
+            <EditText
+                android:id="@+id/textfield_valeur"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                style="@style/editTextStyle"
+                android:background="@color/white"
+                android:textColor="@color/black"
+                android:hint="@string/string_textfield_barcode"
+                android:inputType="phone" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_alignRight="@id/textfield_valeur"
+                android:visibility="invisible"/>
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/button_send"
+            android:layout_width="0dp"
+            android:layout_weight=".30"
+            android:layout_gravity="center_vertical"
+            style="@style/buttonStyle"
+            android:text="@string/string_button_send_value"
+            android:background="@color/button"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</LinearLayout>

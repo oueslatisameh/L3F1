@@ -1,0 +1,59 @@
+doctype
+html
+	include inc/head
+	body
+		include inc/header
+		link(rel="stylesheet", type="text/css", href="/leaflet/leaflet.css")
+		style.
+			#map {
+				height: 450px;
+			} blob {
+				color : #47A447
+			}
+		ul.nav.nav-tabs
+			li.active: a(href="#carte", data-toggle="tab") Carte
+			li: a(href="#info", data-toggle="tab") Informations
+		.tab-content
+			.tab-pane.active#carte
+				br
+				.container.col-lg-8
+					.col-lg-12#map
+				.container.col-lg-4
+					button(onClick="getAddrShop(\'near\');").btn.btn-default Proche
+					button(onClick="getAddrShop(\'faddress\');").btn.btn-primary adresses favorites
+					button(onClick="getAddrShop(\'fshop\');").btn.btn-info magasins favoris
+					hr
+					.container.col-lg-12
+						.list-group#Shop
+			.tab-pane#info
+				br
+				.container.col-lg-6.col-xs-12
+					.col-lg-6.col-xs-12
+						a(href="#").thumbnail
+							img(src="/productImage/#{results.product_img}/#{results.product_ean}.jpg", onerror="this.src='/img/noimage.jpg'").img-responsive
+					.col-lg-6.col-xs-12
+						ul.list-group
+							li.list-group-item.list-group-item-success= results.product_name
+							li.list-group-item= results.brand_name
+							li.list-group-item= results.product_descriptive 
+				.container.col-lg-4.col-xs-12
+					table.table
+						tr
+							th.col-lg-6 sodium
+							th.col-lg-6 800%
+						tr
+							th.col-lg-6 sodium
+							th.col-lg-6 800%
+						tr
+							th.col-lg-6 sodium
+							th.col-lg-6 800
+		include inc/script
+		script(type="text/javascript", src="/leaflet/leaflet.js")
+		script(type="text/javascript", src="/js/jquery-map.js")
+		script.
+			ean = #{"\'" + results.product_ean + "\'"};
+			$(document).ready(function() {
+				if(navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(readyPosition);
+				}
+			});

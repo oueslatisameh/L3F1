@@ -1,0 +1,35 @@
+doctype
+html
+	include inc/head
+	body
+		include inc/header
+		.jumbotron#jumb
+			if err 
+				.alert.alert-warning.alert-dismissable
+					button(type="button", data-dismiss="alert", aria-hidden="true").close &times;
+					strong Erreur!
+					each error in err
+						div= error
+			h1
+				| Vos informations !
+		.container.col-lg-6.col-xs-12
+			div.list-group
+				- each val, index in results
+					- if (index == 'email')
+						a(href="#", onClick="(change(\'password\'));" ).list-group-item *******
+					a(href="#", onClick="(change(\'#{index}\'));" ).list-group-item= val
+		.container.col-lg-6.col-xs-12
+			.container(style="display:none").col-lg-12.col-xs-12#containerhidden
+				span#spanhidden
+				.row
+					.form-group.col-lg-10
+						label(for="inputhidden").col-lg-3.control-label#labelhidden
+						.col-lg-6
+							input(type="text", name="town", placeholder="Ville").form-control#inputhidden
+						label(for="inputhiddenCon").col-lg-3.control-label#labelhiddenCon
+						.col-lg-6
+							input(type="password", name="confirmation", placeholder="confirmation").form-control#inputhiddenCon
+					button(onClick="test();").btn.btn-success.col-lg-2 Submit
+		include inc/script
+		script(src="/js/sha1.js")
+		script(src="/js/jquery-account.js")

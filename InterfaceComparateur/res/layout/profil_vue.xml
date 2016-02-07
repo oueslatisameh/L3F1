@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/fond" >
+
+        <LinearLayout
+            android:layout_height="@dimen/bar_height"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:background="@drawable/border" >
+
+            <ImageButton
+                android:id="@+id/button_menu"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                style="@style/buttonStyle"
+                android:src="@drawable/ic_action_overflow"
+                android:contentDescription="@string/string_drawable_menu_overflow" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:background="@color/text" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:textSize="@dimen/bar_editText_text_size"
+                android:textColor="@color/text"
+                android:text="@string/string_mon_profil" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".90"
+            android:background="@color/fond"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/small_padding"
+                android:layout_marginTop="@dimen/normal_padding"
+                android:text="@string/string_mes_informations"
+                android:textStyle="bold"
+                android:textColor="@color/text" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/text" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="80dp"
+                android:layout_marginBottom="80dp" />
+
+            <LinearLayout
+                android:id="@+id/profile_information"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="98dp"
+                    android:layout_marginTop="@dimen/normal_padding" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/string_email_profil"
+                        android:textColor="@color/text" />
+
+                    <TextView
+                        android:id="@+id/emailTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/small_padding"
+                        android:textColor="@color/text" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="52dp"
+                    android:layout_marginTop="22dp" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/string_mdp_profil"
+                        android:textColor="@color/text" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="*************"
+                        android:layout_marginLeft="@dimen/small_padding"
+                        android:textColor="@color/text" />
+
+                    <ImageButton
+                        android:id="@+id/button_change_password"
+                        android:layout_height="50dp"
+                        android:layout_width="50dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginBottom="7dp"
+                        android:background="@color/fond"
+                        style="@style/buttonStyle"
+                        android:src="@drawable/ic_action_edit"
+                        android:contentDescription="@string/string_drawable_menu_edit" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="107dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/string_nom_profil"
+                        android:textColor="@color/text" />
+
+                    <TextView
+                        android:id="@+id/nomTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/small_padding"
+                        android:textColor="@color/text"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="88dp"
+                    android:layout_marginTop="@dimen/normal_padding" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/string_prenom_profil"
+                        android:textColor="@color/text" />
+
+                    <TextView
+                        android:id="@+id/prenomTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/small_padding"
+                        android:textColor="@color/text" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="23dp"
+                    android:layout_marginTop="@dimen/normal_padding" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/string_dateDeNaissance_profil"
+                        android:textColor="@color/text" />
+
+                    <Button
+                        android:id="@+id/dateNaissanceButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/small_padding"
+                        android:padding="10dp"
+                        android:background="@drawable/editable_button_blue"
+                        android:textSize="15sp"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="114dp"
+                    android:layout_marginTop="@dimen/normal_padding" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/string_rue_profil"
+                        android:textColor="@color/text" />
+
+                    <Button
+                        android:id="@+id/adresseButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/small_padding"
+                        android:padding="10dp"
+                        android:background="@drawable/editable_button_blue"
+                        android:textSize="15sp"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="63dp"
+                    android:layout_marginTop="@dimen/normal_padding" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/string_cp_profil"
+                        android:textColor="@color/text" />
+
+                    <Button
+                        android:id="@+id/codePostalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/small_padding"
+                        android:padding="10dp"
+                        android:background="@drawable/editable_button_blue"
+                        android:textSize="15sp"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="111dp"
+                    android:layout_marginTop="@dimen/normal_padding" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/string_ville_profil"
+                        android:textColor="@color/text" />
+
+                    <Button
+                        android:id="@+id/villeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/small_padding"
+                        android:padding="10dp"
+                        android:background="@drawable/editable_button_blue"
+                        android:textSize="15sp"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="@dimen/normal_padding"
+                android:layout_marginTop="@dimen/normal_padding" >
+
+                    <Button
+                        android:id="@+id/button_favorite_address"
+                        android:layout_width="95dp"
+                        android:layout_height="95dp"
+                        android:layout_marginLeft="40dp"
+                        android:background="@drawable/round_button"
+                        style="@style/buttonStyle"
+                        android:text="@string/string_favorite_address" />
+
+                    <Button
+                        android:id="@+id/button_favorite_shop"
+                        android:layout_width="95dp"
+                        android:layout_height="95dp"
+                        android:layout_marginLeft="50dp"
+                        android:background="@drawable/round_button"
+                        style="@style/buttonStyle"
+                        android:text="@string/string_favorite_shop" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/small_padding"
+                android:layout_marginTop="@dimen/normal_padding"
+                android:text="@string/string_ecran_demarrage"
+                android:textStyle="bold"
+                android:textColor="@color/text" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/text" />
+
+            <Spinner
+                android:id="@+id/list_ecran_demarrage"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:layout_marginTop="@dimen/normal_padding" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/error_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.0"
+            android:padding="10dp"
+            android:background="@color/custom_red"
+            android:textColor="@color/white"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/button_save"
+            android:layout_width="110dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="15sp"
+            android:layout_marginBottom="10sp"
+            android:background="@drawable/mybutton"
+            style="@style/buttonStyle"
+            android:text="@string/string_enregistrer" />
+
+    </LinearLayout>
+
+</ScrollView>

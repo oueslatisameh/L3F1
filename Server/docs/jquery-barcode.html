@@ -1,0 +1,2373 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>jquery-barcode.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="jquery-1.3.2.min.html">
+                jquery-1.3.2.min.js
+              </a>
+            
+              
+              <a class="source" href="jquery-barcode.html">
+                jquery-barcode.js
+              </a>
+            
+              
+              <a class="source" href="jquery-card.html">
+                jquery-card.js
+              </a>
+            
+              
+              <a class="source" href="jquery-faddress.html">
+                jquery-faddress.js
+              </a>
+            
+              
+              <a class="source" href="jquery-list.html">
+                jquery-list.js
+              </a>
+            
+              
+              <a class="source" href="jquery-lookingforproduct.html">
+                jquery-lookingforproduct.js
+              </a>
+            
+              
+              <a class="source" href="jquery-map.html">
+                jquery-map.js
+              </a>
+            
+              
+              <a class="source" href="jquery-product.html">
+                jquery-product.js
+              </a>
+            
+              
+              <a class="source" href="jquery-registration.html">
+                jquery-registration.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>jquery-barcode.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/*!
+ *  BarCode Coder Library (BCC Library)
+ *  BCCL Version 2.0
+ *    
+ *  Porting : jQuery barcode plugin 
+ *  Version : 2.0.3
+ *   
+ *  Date    : 2013-01-06
+ *  Author  : DEMONTE Jean-Baptiste &lt;jbdemonte@gmail.com&gt;
+ *            HOUREZ Jonathan
+ *             
+ *  Web site: http://barcode-coder.com/
+ *  dual licence :  http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html
+ *                  http://www.gnu.org/licenses/gpl.html
+ */</span>
+
+(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($)</span> {</span>
+  
+  <span class="hljs-keyword">var</span> barcode = {
+    settings:{
+      barWidth: <span class="hljs-number">1</span>,
+      barHeight: <span class="hljs-number">50</span>,
+      moduleSize: <span class="hljs-number">5</span>,
+      showHRI: <span class="hljs-literal">true</span>,
+      addQuietZone: <span class="hljs-literal">true</span>,
+      marginHRI: <span class="hljs-number">5</span>,
+      bgColor: <span class="hljs-string">"#FFFFFF"</span>,
+      color: <span class="hljs-string">"#000000"</span>,
+      fontSize: <span class="hljs-number">10</span>,
+      output: <span class="hljs-string">"css"</span>,
+      posX: <span class="hljs-number">0</span>,
+      posY: <span class="hljs-number">0</span>
+    },
+    intval: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(val)</span>{</span>
+      <span class="hljs-keyword">var</span> type = <span class="hljs-keyword">typeof</span>( val );
+      <span class="hljs-keyword">if</span> (type == <span class="hljs-string">'string'</span>){
+        val = val.replace(<span class="hljs-regexp">/[^0-9-.]/g</span>, <span class="hljs-string">""</span>);
+        val = <span class="hljs-built_in">parseInt</span>(val * <span class="hljs-number">1</span>, <span class="hljs-number">10</span>);
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">isNaN</span>(val) || !<span class="hljs-built_in">isFinite</span>(val) ? <span class="hljs-number">0</span> : val;
+      }
+      <span class="hljs-keyword">return</span> type == <span class="hljs-string">'number'</span> &amp;&amp; <span class="hljs-built_in">isFinite</span>(val) ? <span class="hljs-built_in">Math</span>.floor(val) : <span class="hljs-number">0</span>;
+    },
+    i25: { <span class="hljs-comment">// std25 int25</span>
+      encoding: [<span class="hljs-string">"NNWWN"</span>, <span class="hljs-string">"WNNNW"</span>, <span class="hljs-string">"NWNNW"</span>, <span class="hljs-string">"WWNNN"</span>, <span class="hljs-string">"NNWNW"</span>, <span class="hljs-string">"WNWNN"</span>, <span class="hljs-string">"NWWNN"</span>, <span class="hljs-string">"NNNWW"</span>, <span class="hljs-string">"WNNWN"</span>,<span class="hljs-string">"NWNWN"</span>],
+      compute: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code, crc, type)</span>{</span>
+        <span class="hljs-keyword">if</span> (! crc) {
+          <span class="hljs-keyword">if</span> (code.length % <span class="hljs-number">2</span> != <span class="hljs-number">0</span>) code = <span class="hljs-string">'0'</span> + code;
+        } <span class="hljs-keyword">else</span> {
+          <span class="hljs-keyword">if</span> ( (type == <span class="hljs-string">"int25"</span>) &amp;&amp; (code.length % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) ) code = <span class="hljs-string">'0'</span> + code;
+          <span class="hljs-keyword">var</span> odd = <span class="hljs-literal">true</span>, v, sum = <span class="hljs-number">0</span>;
+          <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=code.length-<span class="hljs-number">1</span>; i&gt;-<span class="hljs-number">1</span>; i--){
+            v = barcode.intval(code.charAt(i));
+            <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isNaN</span>(v)) <span class="hljs-keyword">return</span>(<span class="hljs-string">""</span>);
+            sum += odd ? <span class="hljs-number">3</span> * v : v;
+            odd = ! odd;
+          }
+          code += ((<span class="hljs-number">10</span> - sum % <span class="hljs-number">10</span>) % <span class="hljs-number">10</span>).toString();
+        }
+        <span class="hljs-keyword">return</span>(code);
+      },
+      getDigit: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code, crc, type)</span>{</span>
+        code = <span class="hljs-keyword">this</span>.compute(code, crc, type);
+        <span class="hljs-keyword">if</span> (code == <span class="hljs-string">""</span>) <span class="hljs-keyword">return</span>(<span class="hljs-string">""</span>);
+        result = <span class="hljs-string">""</span>;
+        
+        <span class="hljs-keyword">var</span> i, j;
+        <span class="hljs-keyword">if</span> (type == <span class="hljs-string">"int25"</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Interleaved 2 of 5</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>start</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          result += <span class="hljs-string">"1010"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>digits + CRC</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">var</span> c1, c2;
+          <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;code.length / <span class="hljs-number">2</span>; i++){
+            c1 = code.charAt(<span class="hljs-number">2</span>*i);
+            c2 = code.charAt(<span class="hljs-number">2</span>*i+<span class="hljs-number">1</span>);
+            <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>; j&lt;<span class="hljs-number">5</span>; j++){
+              result += <span class="hljs-string">'1'</span>;
+              <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.encoding[c1].charAt(j) == <span class="hljs-string">'W'</span>) result += <span class="hljs-string">'1'</span>;
+              result += <span class="hljs-string">'0'</span>;
+              <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.encoding[c2].charAt(j) == <span class="hljs-string">'W'</span>) result += <span class="hljs-string">'0'</span>;
+            }
+          }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>stop</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          result += <span class="hljs-string">"1101"</span>;
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type == <span class="hljs-string">"std25"</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Standard 2 of 5 is a numeric-only barcode that has been in use a long time. 
+Unlike Interleaved 2 of 5, all of the information is encoded in the bars; the spaces are fixed width and are used only to separate the bars.
+The code is self-checking and does not include a checksum.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>start</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          result += <span class="hljs-string">"11011010"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>digits + CRC</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">var</span> c;
+          <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;code.length; i++){
+            c = code.charAt(i);
+            <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>; j&lt;<span class="hljs-number">5</span>; j++){
+              result += <span class="hljs-string">'1'</span>;
+              <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.encoding[c].charAt(j) == <span class="hljs-string">'W'</span>) result += <span class="hljs-string">"11"</span>;
+              result += <span class="hljs-string">'0'</span>;
+            }
+          }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>stop</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          result += <span class="hljs-string">"11010110"</span>;
+        }
+        <span class="hljs-keyword">return</span>(result);
+      }
+    },
+    ean: {
+      encoding: [ [<span class="hljs-string">"0001101"</span>, <span class="hljs-string">"0100111"</span>, <span class="hljs-string">"1110010"</span>],
+                  [<span class="hljs-string">"0011001"</span>, <span class="hljs-string">"0110011"</span>, <span class="hljs-string">"1100110"</span>], 
+                  [<span class="hljs-string">"0010011"</span>, <span class="hljs-string">"0011011"</span>, <span class="hljs-string">"1101100"</span>],
+                  [<span class="hljs-string">"0111101"</span>, <span class="hljs-string">"0100001"</span>, <span class="hljs-string">"1000010"</span>], 
+                  [<span class="hljs-string">"0100011"</span>, <span class="hljs-string">"0011101"</span>, <span class="hljs-string">"1011100"</span>], 
+                  [<span class="hljs-string">"0110001"</span>, <span class="hljs-string">"0111001"</span>, <span class="hljs-string">"1001110"</span>],
+                  [<span class="hljs-string">"0101111"</span>, <span class="hljs-string">"0000101"</span>, <span class="hljs-string">"1010000"</span>],
+                  [<span class="hljs-string">"0111011"</span>, <span class="hljs-string">"0010001"</span>, <span class="hljs-string">"1000100"</span>],
+                  [<span class="hljs-string">"0110111"</span>, <span class="hljs-string">"0001001"</span>, <span class="hljs-string">"1001000"</span>],
+                  [<span class="hljs-string">"0001011"</span>, <span class="hljs-string">"0010111"</span>, <span class="hljs-string">"1110100"</span>] ],
+      first:  [<span class="hljs-string">"000000"</span>,<span class="hljs-string">"001011"</span>,<span class="hljs-string">"001101"</span>,<span class="hljs-string">"001110"</span>,<span class="hljs-string">"010011"</span>,<span class="hljs-string">"011001"</span>,<span class="hljs-string">"011100"</span>,<span class="hljs-string">"010101"</span>,<span class="hljs-string">"010110"</span>,<span class="hljs-string">"011010"</span>],
+      getDigit: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code, type)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Check len (12 for ean13, 7 for ean8)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> len = type == <span class="hljs-string">"ean8"</span> ? <span class="hljs-number">7</span> : <span class="hljs-number">12</span>;
+        code = code.substring(<span class="hljs-number">0</span>, len);
+        <span class="hljs-keyword">if</span> (code.length != len) <span class="hljs-keyword">return</span>(<span class="hljs-string">""</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Check each digit is numeric</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> c;
+        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;code.length; i++){
+          c = code.charAt(i);
+          <span class="hljs-keyword">if</span> ( (c &lt; <span class="hljs-string">'0'</span>) || (c &gt; <span class="hljs-string">'9'</span>) ) <span class="hljs-keyword">return</span>(<span class="hljs-string">""</span>);
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>get checksum</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        code = <span class="hljs-keyword">this</span>.compute(code, type);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>process analyse</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> result = <span class="hljs-string">"101"</span>; <span class="hljs-comment">// start</span>
+        
+        <span class="hljs-keyword">if</span> (type == <span class="hljs-string">"ean8"</span>){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>process left part</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;<span class="hljs-number">4</span>; i++){
+            result += <span class="hljs-keyword">this</span>.encoding[barcode.intval(code.charAt(i))][<span class="hljs-number">0</span>];
+          }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>center guard bars</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          result += <span class="hljs-string">"01010"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>process right part</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=<span class="hljs-number">4</span>; i&lt;<span class="hljs-number">8</span>; i++){
+            result += <span class="hljs-keyword">this</span>.encoding[barcode.intval(code.charAt(i))][<span class="hljs-number">2</span>];
+          }
+              
+        } <span class="hljs-keyword">else</span> { <span class="hljs-comment">// ean13</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>extract first digit and get sequence</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">var</span> seq = <span class="hljs-keyword">this</span>.first[ barcode.intval(code.charAt(<span class="hljs-number">0</span>)) ];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>process left part</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=<span class="hljs-number">1</span>; i&lt;<span class="hljs-number">7</span>; i++){
+            result += <span class="hljs-keyword">this</span>.encoding[barcode.intval(code.charAt(i))][ barcode.intval(seq.charAt(i-<span class="hljs-number">1</span>)) ];
+          }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>center guard bars</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          result += <span class="hljs-string">"01010"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>process right part</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=<span class="hljs-number">7</span>; i&lt;<span class="hljs-number">13</span>; i++){
+            result += <span class="hljs-keyword">this</span>.encoding[barcode.intval(code.charAt(i))][ <span class="hljs-number">2</span> ];
+          }
+        } <span class="hljs-comment">// ean13</span>
+        
+        result += <span class="hljs-string">"101"</span>; <span class="hljs-comment">// stop</span>
+        <span class="hljs-keyword">return</span>(result);
+      },
+      compute: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(code, type)</span>{</span>
+        <span class="hljs-keyword">var</span> len = type == <span class="hljs-string">"ean13"</span> ? <span class="hljs-number">12</span> : <span class="hljs-number">7</span>;
+        code = code.substring(<span class="hljs-number">0</span>, len);
+        <span class="hljs-keyword">var</span> sum = <span class="hljs-number">0</span>, odd = <span class="hljs-literal">true</span>;
+        <span class="hljs-keyword">for</span>(i=code.length-<span class="hljs-number">1</span>; i&gt;-<span class="hljs-number">1</span>; i--){
+          sum += (odd ? <span class="hljs-number">3</span> : <span class="hljs-number">1</span>) * barcode.intval(code.charAt(i));
+          odd = ! odd;
+        }
+        <span class="hljs-keyword">return</span>(code + ((<span class="hljs-number">10</span> - sum % <span class="hljs-number">10</span>) % <span class="hljs-number">10</span>).toString());
+      }
+    },
+    upc: {
+      getDigit: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code)</span>{</span>
+        <span class="hljs-keyword">if</span> (code.length &lt; <span class="hljs-number">12</span>) {
+          code = <span class="hljs-string">'0'</span> + code;
+        }
+        <span class="hljs-keyword">return</span> barcode.ean.getDigit(code, <span class="hljs-string">'ean13'</span>);
+      },
+      compute: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(code)</span>{</span>
+        <span class="hljs-keyword">if</span> (code.length &lt; <span class="hljs-number">12</span>) {
+          code = <span class="hljs-string">'0'</span> + code;
+        }
+        <span class="hljs-keyword">return</span> barcode.ean.compute(code, <span class="hljs-string">'ean13'</span>).substr(<span class="hljs-number">1</span>);
+      }
+    },
+    msi: {
+      encoding:[<span class="hljs-string">"100100100100"</span>, <span class="hljs-string">"100100100110"</span>, <span class="hljs-string">"100100110100"</span>, <span class="hljs-string">"100100110110"</span>,
+                <span class="hljs-string">"100110100100"</span>, <span class="hljs-string">"100110100110"</span>, <span class="hljs-string">"100110110100"</span>, <span class="hljs-string">"100110110110"</span>,
+                <span class="hljs-string">"110100100100"</span>, <span class="hljs-string">"110100100110"</span>],
+      compute: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code, crc)</span>{</span>
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span>(crc) == <span class="hljs-string">"object"</span>){
+          <span class="hljs-keyword">if</span> (crc.crc1 == <span class="hljs-string">"mod10"</span>){
+            code = <span class="hljs-keyword">this</span>.computeMod10(code);
+          } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (crc.crc1 == <span class="hljs-string">"mod11"</span>){
+            code = <span class="hljs-keyword">this</span>.computeMod11(code);
+          }
+          <span class="hljs-keyword">if</span> (crc.crc2 == <span class="hljs-string">"mod10"</span>){
+            code = <span class="hljs-keyword">this</span>.computeMod10(code);
+          } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (crc.crc2 == <span class="hljs-string">"mod11"</span>){
+            code = <span class="hljs-keyword">this</span>.computeMod11(code);
+          }
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span>(crc) == <span class="hljs-string">"boolean"</span>){
+          <span class="hljs-keyword">if</span> (crc) code = <span class="hljs-keyword">this</span>.computeMod10(code);
+        }
+        <span class="hljs-keyword">return</span>(code);
+      },
+      computeMod10:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code)</span>{</span>
+        <span class="hljs-keyword">var</span> i, 
+        toPart1 = code.length % <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">var</span> n1 = <span class="hljs-number">0</span>, sum = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;code.length; i++){
+          <span class="hljs-keyword">if</span> (toPart1) {
+            n1 = <span class="hljs-number">10</span> * n1 + barcode.intval(code.charAt(i));
+          } <span class="hljs-keyword">else</span> {
+            sum += barcode.intval(code.charAt(i));
+          }
+          toPart1 = ! toPart1;
+        }
+        <span class="hljs-keyword">var</span> s1 = (<span class="hljs-number">2</span> * n1).toString();
+        <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;s1.length; i++){
+          sum += barcode.intval(s1.charAt(i));
+        }
+        <span class="hljs-keyword">return</span>(code + ((<span class="hljs-number">10</span> - sum % <span class="hljs-number">10</span>) % <span class="hljs-number">10</span>).toString());
+      },
+      computeMod11:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code)</span>{</span>
+        <span class="hljs-keyword">var</span> sum = <span class="hljs-number">0</span>, weight = <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=code.length-<span class="hljs-number">1</span>; i&gt;=<span class="hljs-number">0</span>; i--){
+          sum += weight * barcode.intval(code.charAt(i));
+          weight = weight == <span class="hljs-number">7</span> ? <span class="hljs-number">2</span> : weight + <span class="hljs-number">1</span>;
+        }
+        <span class="hljs-keyword">return</span>(code + ((<span class="hljs-number">11</span> - sum % <span class="hljs-number">11</span>) % <span class="hljs-number">11</span>).toString());
+      },
+      getDigit: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code, crc)</span>{</span>
+        <span class="hljs-keyword">var</span> table = <span class="hljs-string">"0123456789"</span>;
+        <span class="hljs-keyword">var</span> index = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">var</span> result = <span class="hljs-string">""</span>;
+        
+        code = <span class="hljs-keyword">this</span>.compute(code, <span class="hljs-literal">false</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>start</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result = <span class="hljs-string">"110"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>digits</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;code.length; i++){
+          index = table.indexOf( code.charAt(i) );
+          <span class="hljs-keyword">if</span> (index &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span>(<span class="hljs-string">""</span>);
+          result += <span class="hljs-keyword">this</span>.encoding[ index ];
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>stop</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result += <span class="hljs-string">"1001"</span>;
+        
+        <span class="hljs-keyword">return</span>(result);
+      }
+    },
+    code11: {
+      encoding:[  <span class="hljs-string">"101011"</span>, <span class="hljs-string">"1101011"</span>, <span class="hljs-string">"1001011"</span>, <span class="hljs-string">"1100101"</span>,
+                  <span class="hljs-string">"1011011"</span>, <span class="hljs-string">"1101101"</span>, <span class="hljs-string">"1001101"</span>, <span class="hljs-string">"1010011"</span>,
+                  <span class="hljs-string">"1101001"</span>, <span class="hljs-string">"110101"</span>, <span class="hljs-string">"101101"</span>],
+      getDigit: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code)</span>{</span>
+        <span class="hljs-keyword">var</span> table = <span class="hljs-string">"0123456789-"</span>;
+        <span class="hljs-keyword">var</span> i, index, result = <span class="hljs-string">""</span>, intercharacter = <span class="hljs-string">'0'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>start</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result = <span class="hljs-string">"1011001"</span> + intercharacter;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>digits</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;code.length; i++){
+          index = table.indexOf( code.charAt(i) );
+          <span class="hljs-keyword">if</span> (index &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span>(<span class="hljs-string">""</span>);
+          result += <span class="hljs-keyword">this</span>.encoding[ index ] + intercharacter;
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>checksum</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> weightC    = <span class="hljs-number">0</span>,
+        weightSumC = <span class="hljs-number">0</span>,
+        weightK    = <span class="hljs-number">1</span>, <span class="hljs-comment">// start at 1 because the right-most character is "C" checksum</span>
+        weightSumK   = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span>(i=code.length-<span class="hljs-number">1</span>; i&gt;=<span class="hljs-number">0</span>; i--){
+          weightC = weightC == <span class="hljs-number">10</span> ? <span class="hljs-number">1</span> : weightC + <span class="hljs-number">1</span>;
+          weightK = weightK == <span class="hljs-number">10</span> ? <span class="hljs-number">1</span> : weightK + <span class="hljs-number">1</span>;
+          
+          index = table.indexOf( code.charAt(i) );
+          
+          weightSumC += weightC * index;
+          weightSumK += weightK * index;
+        }
+        
+        <span class="hljs-keyword">var</span> c = weightSumC % <span class="hljs-number">11</span>;
+        weightSumK += c;
+        <span class="hljs-keyword">var</span> k = weightSumK % <span class="hljs-number">11</span>;
+        
+        result += <span class="hljs-keyword">this</span>.encoding[c] + intercharacter;
+        
+        <span class="hljs-keyword">if</span> (code.length &gt;= <span class="hljs-number">10</span>){
+          result += <span class="hljs-keyword">this</span>.encoding[k] + intercharacter;
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>stop</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result  += <span class="hljs-string">"1011001"</span>;
+        
+        <span class="hljs-keyword">return</span>(result);
+      }   
+    },
+    code39: {
+      encoding:[<span class="hljs-string">"101001101101"</span>, <span class="hljs-string">"110100101011"</span>, <span class="hljs-string">"101100101011"</span>, <span class="hljs-string">"110110010101"</span>,
+                <span class="hljs-string">"101001101011"</span>, <span class="hljs-string">"110100110101"</span>, <span class="hljs-string">"101100110101"</span>, <span class="hljs-string">"101001011011"</span>,
+                <span class="hljs-string">"110100101101"</span>, <span class="hljs-string">"101100101101"</span>, <span class="hljs-string">"110101001011"</span>, <span class="hljs-string">"101101001011"</span>,
+                <span class="hljs-string">"110110100101"</span>, <span class="hljs-string">"101011001011"</span>, <span class="hljs-string">"110101100101"</span>, <span class="hljs-string">"101101100101"</span>,
+                <span class="hljs-string">"101010011011"</span>, <span class="hljs-string">"110101001101"</span>, <span class="hljs-string">"101101001101"</span>, <span class="hljs-string">"101011001101"</span>,
+                <span class="hljs-string">"110101010011"</span>, <span class="hljs-string">"101101010011"</span>, <span class="hljs-string">"110110101001"</span>, <span class="hljs-string">"101011010011"</span>,
+                <span class="hljs-string">"110101101001"</span>, <span class="hljs-string">"101101101001"</span>, <span class="hljs-string">"101010110011"</span>, <span class="hljs-string">"110101011001"</span>,
+                <span class="hljs-string">"101101011001"</span>, <span class="hljs-string">"101011011001"</span>, <span class="hljs-string">"110010101011"</span>, <span class="hljs-string">"100110101011"</span>,
+                <span class="hljs-string">"110011010101"</span>, <span class="hljs-string">"100101101011"</span>, <span class="hljs-string">"110010110101"</span>, <span class="hljs-string">"100110110101"</span>,
+                <span class="hljs-string">"100101011011"</span>, <span class="hljs-string">"110010101101"</span>, <span class="hljs-string">"100110101101"</span>, <span class="hljs-string">"100100100101"</span>,
+                <span class="hljs-string">"100100101001"</span>, <span class="hljs-string">"100101001001"</span>, <span class="hljs-string">"101001001001"</span>, <span class="hljs-string">"100101101101"</span>],
+      getDigit: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code)</span>{</span>
+        <span class="hljs-keyword">var</span> table = <span class="hljs-string">"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%*"</span>;
+        <span class="hljs-keyword">var</span> i, index, result=<span class="hljs-string">""</span>, intercharacter=<span class="hljs-string">'0'</span>;
+        
+        <span class="hljs-keyword">if</span> (code.indexOf(<span class="hljs-string">'*'</span>) &gt;= <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span>(<span class="hljs-string">""</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>Add Start and Stop charactere : *</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        code = (<span class="hljs-string">"*"</span> + code + <span class="hljs-string">"*"</span>).toUpperCase();
+        
+        <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;code.length; i++){
+          index = table.indexOf( code.charAt(i) );
+          <span class="hljs-keyword">if</span> (index &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span>(<span class="hljs-string">""</span>);
+          <span class="hljs-keyword">if</span> (i &gt; <span class="hljs-number">0</span>) result += intercharacter;
+          result += <span class="hljs-keyword">this</span>.encoding[ index ];
+        }
+        <span class="hljs-keyword">return</span>(result);
+      }
+    },
+    code93:{
+      encoding:[<span class="hljs-string">"100010100"</span>, <span class="hljs-string">"101001000"</span>, <span class="hljs-string">"101000100"</span>, <span class="hljs-string">"101000010"</span>,
+                <span class="hljs-string">"100101000"</span>, <span class="hljs-string">"100100100"</span>, <span class="hljs-string">"100100010"</span>, <span class="hljs-string">"101010000"</span>,
+                <span class="hljs-string">"100010010"</span>, <span class="hljs-string">"100001010"</span>, <span class="hljs-string">"110101000"</span>, <span class="hljs-string">"110100100"</span>,
+                <span class="hljs-string">"110100010"</span>, <span class="hljs-string">"110010100"</span>, <span class="hljs-string">"110010010"</span>, <span class="hljs-string">"110001010"</span>,
+                <span class="hljs-string">"101101000"</span>, <span class="hljs-string">"101100100"</span>, <span class="hljs-string">"101100010"</span>, <span class="hljs-string">"100110100"</span>,
+                <span class="hljs-string">"100011010"</span>, <span class="hljs-string">"101011000"</span>, <span class="hljs-string">"101001100"</span>, <span class="hljs-string">"101000110"</span>,
+                <span class="hljs-string">"100101100"</span>, <span class="hljs-string">"100010110"</span>, <span class="hljs-string">"110110100"</span>, <span class="hljs-string">"110110010"</span>,
+                <span class="hljs-string">"110101100"</span>, <span class="hljs-string">"110100110"</span>, <span class="hljs-string">"110010110"</span>, <span class="hljs-string">"110011010"</span>,
+                <span class="hljs-string">"101101100"</span>, <span class="hljs-string">"101100110"</span>, <span class="hljs-string">"100110110"</span>, <span class="hljs-string">"100111010"</span>,
+                <span class="hljs-string">"100101110"</span>, <span class="hljs-string">"111010100"</span>, <span class="hljs-string">"111010010"</span>, <span class="hljs-string">"111001010"</span>,
+                <span class="hljs-string">"101101110"</span>, <span class="hljs-string">"101110110"</span>, <span class="hljs-string">"110101110"</span>, <span class="hljs-string">"100100110"</span>,
+                <span class="hljs-string">"111011010"</span>, <span class="hljs-string">"111010110"</span>, <span class="hljs-string">"100110010"</span>, <span class="hljs-string">"101011110"</span>],
+      getDigit: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code, crc)</span>{</span>
+        <span class="hljs-keyword">var</span> table = <span class="hljs-string">"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%____*"</span>, <span class="hljs-comment">// _ =&gt; ($), (%), (/) et (+)</span>
+        c, result = <span class="hljs-string">""</span>;
+        
+        <span class="hljs-keyword">if</span> (code.indexOf(<span class="hljs-string">'*'</span>) &gt;= <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span>(<span class="hljs-string">""</span>);
+        
+        code = code.toUpperCase();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>start :  *</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result  += <span class="hljs-keyword">this</span>.encoding[<span class="hljs-number">47</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>digits</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;code.length; i++){
+          c = code.charAt(i);
+          index = table.indexOf( c );
+          <span class="hljs-keyword">if</span> ( (c == <span class="hljs-string">'_'</span>) || (index &lt; <span class="hljs-number">0</span>) ) <span class="hljs-keyword">return</span>(<span class="hljs-string">""</span>);
+          result += <span class="hljs-keyword">this</span>.encoding[ index ];
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>checksum</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (crc){
+          <span class="hljs-keyword">var</span> weightC    = <span class="hljs-number">0</span>,
+          weightSumC = <span class="hljs-number">0</span>,
+          weightK    = <span class="hljs-number">1</span>, <span class="hljs-comment">// start at 1 because the right-most character is "C" checksum</span>
+          weightSumK   = <span class="hljs-number">0</span>;
+          <span class="hljs-keyword">for</span>(i=code.length-<span class="hljs-number">1</span>; i&gt;=<span class="hljs-number">0</span>; i--){
+            weightC = weightC == <span class="hljs-number">20</span> ? <span class="hljs-number">1</span> : weightC + <span class="hljs-number">1</span>;
+            weightK = weightK == <span class="hljs-number">15</span> ? <span class="hljs-number">1</span> : weightK + <span class="hljs-number">1</span>;
+            
+            index = table.indexOf( code.charAt(i) );
+            
+            weightSumC += weightC * index;
+            weightSumK += weightK * index;
+          }
+          
+          <span class="hljs-keyword">var</span> c = weightSumC % <span class="hljs-number">47</span>;
+          weightSumK += c;
+          <span class="hljs-keyword">var</span> k = weightSumK % <span class="hljs-number">47</span>;
+          
+          result += <span class="hljs-keyword">this</span>.encoding[c];
+          result += <span class="hljs-keyword">this</span>.encoding[k];
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>stop : *</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result  += <span class="hljs-keyword">this</span>.encoding[<span class="hljs-number">47</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>Terminaison bar</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result  += <span class="hljs-string">'1'</span>;
+        <span class="hljs-keyword">return</span>(result);
+      }
+    },
+    code128: {
+      encoding:[<span class="hljs-string">"11011001100"</span>, <span class="hljs-string">"11001101100"</span>, <span class="hljs-string">"11001100110"</span>, <span class="hljs-string">"10010011000"</span>,
+                <span class="hljs-string">"10010001100"</span>, <span class="hljs-string">"10001001100"</span>, <span class="hljs-string">"10011001000"</span>, <span class="hljs-string">"10011000100"</span>,
+                <span class="hljs-string">"10001100100"</span>, <span class="hljs-string">"11001001000"</span>, <span class="hljs-string">"11001000100"</span>, <span class="hljs-string">"11000100100"</span>,
+                <span class="hljs-string">"10110011100"</span>, <span class="hljs-string">"10011011100"</span>, <span class="hljs-string">"10011001110"</span>, <span class="hljs-string">"10111001100"</span>,
+                <span class="hljs-string">"10011101100"</span>, <span class="hljs-string">"10011100110"</span>, <span class="hljs-string">"11001110010"</span>, <span class="hljs-string">"11001011100"</span>,
+                <span class="hljs-string">"11001001110"</span>, <span class="hljs-string">"11011100100"</span>, <span class="hljs-string">"11001110100"</span>, <span class="hljs-string">"11101101110"</span>,
+                <span class="hljs-string">"11101001100"</span>, <span class="hljs-string">"11100101100"</span>, <span class="hljs-string">"11100100110"</span>, <span class="hljs-string">"11101100100"</span>,
+                <span class="hljs-string">"11100110100"</span>, <span class="hljs-string">"11100110010"</span>, <span class="hljs-string">"11011011000"</span>, <span class="hljs-string">"11011000110"</span>,
+                <span class="hljs-string">"11000110110"</span>, <span class="hljs-string">"10100011000"</span>, <span class="hljs-string">"10001011000"</span>, <span class="hljs-string">"10001000110"</span>,
+                <span class="hljs-string">"10110001000"</span>, <span class="hljs-string">"10001101000"</span>, <span class="hljs-string">"10001100010"</span>, <span class="hljs-string">"11010001000"</span>,
+                <span class="hljs-string">"11000101000"</span>, <span class="hljs-string">"11000100010"</span>, <span class="hljs-string">"10110111000"</span>, <span class="hljs-string">"10110001110"</span>,
+                <span class="hljs-string">"10001101110"</span>, <span class="hljs-string">"10111011000"</span>, <span class="hljs-string">"10111000110"</span>, <span class="hljs-string">"10001110110"</span>,
+                <span class="hljs-string">"11101110110"</span>, <span class="hljs-string">"11010001110"</span>, <span class="hljs-string">"11000101110"</span>, <span class="hljs-string">"11011101000"</span>,
+                <span class="hljs-string">"11011100010"</span>, <span class="hljs-string">"11011101110"</span>, <span class="hljs-string">"11101011000"</span>, <span class="hljs-string">"11101000110"</span>,
+                <span class="hljs-string">"11100010110"</span>, <span class="hljs-string">"11101101000"</span>, <span class="hljs-string">"11101100010"</span>, <span class="hljs-string">"11100011010"</span>,
+                <span class="hljs-string">"11101111010"</span>, <span class="hljs-string">"11001000010"</span>, <span class="hljs-string">"11110001010"</span>, <span class="hljs-string">"10100110000"</span>,
+                <span class="hljs-string">"10100001100"</span>, <span class="hljs-string">"10010110000"</span>, <span class="hljs-string">"10010000110"</span>, <span class="hljs-string">"10000101100"</span>,
+                <span class="hljs-string">"10000100110"</span>, <span class="hljs-string">"10110010000"</span>, <span class="hljs-string">"10110000100"</span>, <span class="hljs-string">"10011010000"</span>,
+                <span class="hljs-string">"10011000010"</span>, <span class="hljs-string">"10000110100"</span>, <span class="hljs-string">"10000110010"</span>, <span class="hljs-string">"11000010010"</span>,
+                <span class="hljs-string">"11001010000"</span>, <span class="hljs-string">"11110111010"</span>, <span class="hljs-string">"11000010100"</span>, <span class="hljs-string">"10001111010"</span>,
+                <span class="hljs-string">"10100111100"</span>, <span class="hljs-string">"10010111100"</span>, <span class="hljs-string">"10010011110"</span>, <span class="hljs-string">"10111100100"</span>,
+                <span class="hljs-string">"10011110100"</span>, <span class="hljs-string">"10011110010"</span>, <span class="hljs-string">"11110100100"</span>, <span class="hljs-string">"11110010100"</span>,
+                <span class="hljs-string">"11110010010"</span>, <span class="hljs-string">"11011011110"</span>, <span class="hljs-string">"11011110110"</span>, <span class="hljs-string">"11110110110"</span>,
+                <span class="hljs-string">"10101111000"</span>, <span class="hljs-string">"10100011110"</span>, <span class="hljs-string">"10001011110"</span>, <span class="hljs-string">"10111101000"</span>,
+                <span class="hljs-string">"10111100010"</span>, <span class="hljs-string">"11110101000"</span>, <span class="hljs-string">"11110100010"</span>, <span class="hljs-string">"10111011110"</span>,
+                <span class="hljs-string">"10111101110"</span>, <span class="hljs-string">"11101011110"</span>, <span class="hljs-string">"11110101110"</span>, <span class="hljs-string">"11010000100"</span>,
+                <span class="hljs-string">"11010010000"</span>, <span class="hljs-string">"11010011100"</span>, <span class="hljs-string">"11000111010"</span>],
+      getDigit: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code)</span>{</span>
+        <span class="hljs-keyword">var</span> tableB = <span class="hljs-string">" !\"#$%&amp;'()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"</span>;
+        <span class="hljs-keyword">var</span> result = <span class="hljs-string">""</span>;
+        <span class="hljs-keyword">var</span> sum = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">var</span> isum = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">var</span> value = <span class="hljs-number">0</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>check each characters</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;code.length; i++){
+          <span class="hljs-keyword">if</span> (tableB.indexOf(code.charAt(i)) == -<span class="hljs-number">1</span>) <span class="hljs-keyword">return</span>(<span class="hljs-string">""</span>);
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>check firsts characters : start with C table only if enought numeric</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> tableCActivated = code.length &gt; <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">var</span> c = <span class="hljs-string">''</span>;
+        <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;<span class="hljs-number">3</span> &amp;&amp; i&lt;code.length; i++){
+        c = code.charAt(i);
+          tableCActivated &amp;= c &gt;= <span class="hljs-string">'0'</span> &amp;&amp; c &lt;= <span class="hljs-string">'9'</span>;
+        }
+        
+        sum = tableCActivated ? <span class="hljs-number">105</span> : <span class="hljs-number">104</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>start : [105] : C table or [104] : B table </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result = <span class="hljs-keyword">this</span>.encoding[ sum ];
+        
+        i = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">while</span>( i &lt; code.length ){
+          <span class="hljs-keyword">if</span> (! tableCActivated){
+            j = <span class="hljs-number">0</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>check next character to activate C table if interresting</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">while</span> ( (i + j &lt; code.length) &amp;&amp; (code.charAt(i+j) &gt;= <span class="hljs-string">'0'</span>) &amp;&amp; (code.charAt(i+j) &lt;= <span class="hljs-string">'9'</span>) ) j++;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>6 min everywhere or 4 mini at the end</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            tableCActivated = (j &gt; <span class="hljs-number">5</span>) || ((i + j - <span class="hljs-number">1</span> == code.length) &amp;&amp; (j &gt; <span class="hljs-number">3</span>));
+            
+            <span class="hljs-keyword">if</span> ( tableCActivated ){
+            result += <span class="hljs-keyword">this</span>.encoding[ <span class="hljs-number">99</span> ]; <span class="hljs-comment">// C table</span>
+            sum += ++isum * <span class="hljs-number">99</span>;
+            }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <pre><code>    <span class="hljs-number">2</span> min <span class="hljs-keyword">for</span> table C so need table B
+</code></pre>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( (i == code.length) || (code.charAt(i) &lt; <span class="hljs-string">'0'</span>) || (code.charAt(i) &gt; <span class="hljs-string">'9'</span>) || (code.charAt(i+<span class="hljs-number">1</span>) &lt; <span class="hljs-string">'0'</span>) || (code.charAt(i+<span class="hljs-number">1</span>) &gt; <span class="hljs-string">'9'</span>) ) {
+            tableCActivated = <span class="hljs-literal">false</span>;
+            result += <span class="hljs-keyword">this</span>.encoding[ <span class="hljs-number">100</span> ]; <span class="hljs-comment">// B table</span>
+            sum += ++isum * <span class="hljs-number">100</span>;
+          }
+          
+          <span class="hljs-keyword">if</span> ( tableCActivated ) {
+            value = barcode.intval(code.charAt(i) + code.charAt(i+<span class="hljs-number">1</span>)); <span class="hljs-comment">// Add two characters (numeric)</span>
+            i += <span class="hljs-number">2</span>;
+          } <span class="hljs-keyword">else</span> {
+            value = tableB.indexOf( code.charAt(i) ); <span class="hljs-comment">// Add one character</span>
+            i += <span class="hljs-number">1</span>;
+          }
+          result  += <span class="hljs-keyword">this</span>.encoding[ value ];
+          sum += ++isum * value;
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>Add CRC</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result  += <span class="hljs-keyword">this</span>.encoding[ sum % <span class="hljs-number">103</span> ];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>Stop</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result += <span class="hljs-keyword">this</span>.encoding[<span class="hljs-number">106</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p>Termination bar</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result += <span class="hljs-string">"11"</span>;
+        
+        <span class="hljs-keyword">return</span>(result);
+      }
+    },
+    codabar: {
+      encoding:[<span class="hljs-string">"101010011"</span>, <span class="hljs-string">"101011001"</span>, <span class="hljs-string">"101001011"</span>, <span class="hljs-string">"110010101"</span>,
+                <span class="hljs-string">"101101001"</span>, <span class="hljs-string">"110101001"</span>, <span class="hljs-string">"100101011"</span>, <span class="hljs-string">"100101101"</span>,
+                <span class="hljs-string">"100110101"</span>, <span class="hljs-string">"110100101"</span>, <span class="hljs-string">"101001101"</span>, <span class="hljs-string">"101100101"</span>,
+                <span class="hljs-string">"1101011011"</span>, <span class="hljs-string">"1101101011"</span>, <span class="hljs-string">"1101101101"</span>, <span class="hljs-string">"1011011011"</span>,
+                <span class="hljs-string">"1011001001"</span>, <span class="hljs-string">"1010010011"</span>, <span class="hljs-string">"1001001011"</span>, <span class="hljs-string">"1010011001"</span>],
+      getDigit: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(code)</span>{</span>
+        <span class="hljs-keyword">var</span> table = <span class="hljs-string">"0123456789-$:/.+"</span>;
+        <span class="hljs-keyword">var</span> i, index, result=<span class="hljs-string">""</span>, intercharacter = <span class="hljs-string">'0'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <p>add start : A-&gt;D : arbitrary choose A</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result += <span class="hljs-keyword">this</span>.encoding[<span class="hljs-number">16</span>] + intercharacter;
+        
+        <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;code.length; i++){
+          index = table.indexOf( code.charAt(i) );
+          <span class="hljs-keyword">if</span> (index &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span>(<span class="hljs-string">""</span>);
+          result += <span class="hljs-keyword">this</span>.encoding[ index ] + intercharacter;
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>add stop : A-&gt;D : arbitrary choose A</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        result += <span class="hljs-keyword">this</span>.encoding[<span class="hljs-number">16</span>];
+        <span class="hljs-keyword">return</span>(result);
+      }
+    },
+    datamatrix: {
+      lengthRows:       [ <span class="hljs-number">10</span>, <span class="hljs-number">12</span>, <span class="hljs-number">14</span>, <span class="hljs-number">16</span>, <span class="hljs-number">18</span>, <span class="hljs-number">20</span>, <span class="hljs-number">22</span>, <span class="hljs-number">24</span>, <span class="hljs-number">26</span>,  <span class="hljs-comment">// 24 squares et 6 rectangular</span>
+                          <span class="hljs-number">32</span>, <span class="hljs-number">36</span>, <span class="hljs-number">40</span>, <span class="hljs-number">44</span>, <span class="hljs-number">48</span>, <span class="hljs-number">52</span>, <span class="hljs-number">64</span>, <span class="hljs-number">72</span>, <span class="hljs-number">80</span>,  <span class="hljs-number">88</span>, <span class="hljs-number">96</span>, <span class="hljs-number">104</span>, <span class="hljs-number">120</span>, <span class="hljs-number">132</span>, <span class="hljs-number">144</span>,
+                          <span class="hljs-number">8</span>, <span class="hljs-number">8</span>, <span class="hljs-number">12</span>, <span class="hljs-number">12</span>, <span class="hljs-number">16</span>, <span class="hljs-number">16</span>],
+      lengthCols:       [ <span class="hljs-number">10</span>, <span class="hljs-number">12</span>, <span class="hljs-number">14</span>, <span class="hljs-number">16</span>, <span class="hljs-number">18</span>, <span class="hljs-number">20</span>, <span class="hljs-number">22</span>, <span class="hljs-number">24</span>, <span class="hljs-number">26</span>,  <span class="hljs-comment">// Number of columns for the entire datamatrix</span>
+                          <span class="hljs-number">32</span>, <span class="hljs-number">36</span>, <span class="hljs-number">40</span>, <span class="hljs-number">44</span>, <span class="hljs-number">48</span>, <span class="hljs-number">52</span>, <span class="hljs-number">64</span>, <span class="hljs-number">72</span>, <span class="hljs-number">80</span>, <span class="hljs-number">88</span>, <span class="hljs-number">96</span>, <span class="hljs-number">104</span>, <span class="hljs-number">120</span>, <span class="hljs-number">132</span>, <span class="hljs-number">144</span>,
+                          <span class="hljs-number">18</span>, <span class="hljs-number">32</span>, <span class="hljs-number">26</span>, <span class="hljs-number">36</span>, <span class="hljs-number">36</span>, <span class="hljs-number">48</span>],
+      dataCWCount:      [ <span class="hljs-number">3</span>, <span class="hljs-number">5</span>, <span class="hljs-number">8</span>, <span class="hljs-number">12</span>,  <span class="hljs-number">18</span>,  <span class="hljs-number">22</span>,  <span class="hljs-number">30</span>,  <span class="hljs-number">36</span>,  <span class="hljs-comment">// Number of data codewords for the datamatrix</span>
+                          <span class="hljs-number">44</span>, <span class="hljs-number">62</span>, <span class="hljs-number">86</span>, <span class="hljs-number">114</span>, <span class="hljs-number">144</span>, <span class="hljs-number">174</span>, <span class="hljs-number">204</span>, <span class="hljs-number">280</span>, <span class="hljs-number">368</span>, <span class="hljs-number">456</span>, <span class="hljs-number">576</span>, <span class="hljs-number">696</span>, <span class="hljs-number">816</span>, <span class="hljs-number">1050</span>, 
+                          <span class="hljs-number">1304</span>, <span class="hljs-number">1558</span>, <span class="hljs-number">5</span>, <span class="hljs-number">10</span>, <span class="hljs-number">16</span>, <span class="hljs-number">22</span>, <span class="hljs-number">32</span>, <span class="hljs-number">49</span>],
+      solomonCWCount:   [ <span class="hljs-number">5</span>, <span class="hljs-number">7</span>, <span class="hljs-number">10</span>, <span class="hljs-number">12</span>, <span class="hljs-number">14</span>, <span class="hljs-number">18</span>, <span class="hljs-number">20</span>, <span class="hljs-number">24</span>, <span class="hljs-number">28</span>, <span class="hljs-comment">// Number of Reed-Solomon codewords for the datamatrix</span>
+                          <span class="hljs-number">36</span>, <span class="hljs-number">42</span>, <span class="hljs-number">48</span>, <span class="hljs-number">56</span>, <span class="hljs-number">68</span>, <span class="hljs-number">84</span>, <span class="hljs-number">112</span>, <span class="hljs-number">144</span>, <span class="hljs-number">192</span>, <span class="hljs-number">224</span>, <span class="hljs-number">272</span>, <span class="hljs-number">336</span>, <span class="hljs-number">408</span>, <span class="hljs-number">496</span>, <span class="hljs-number">620</span>,
+                          <span class="hljs-number">7</span>, <span class="hljs-number">11</span>, <span class="hljs-number">14</span>, <span class="hljs-number">18</span>, <span class="hljs-number">24</span>, <span class="hljs-number">28</span>],
+      dataRegionRows:   [ <span class="hljs-number">8</span>, <span class="hljs-number">10</span>, <span class="hljs-number">12</span>, <span class="hljs-number">14</span>, <span class="hljs-number">16</span>, <span class="hljs-number">18</span>, <span class="hljs-number">20</span>, <span class="hljs-number">22</span>, <span class="hljs-comment">// Number of rows per region</span>
+                          <span class="hljs-number">24</span>, <span class="hljs-number">14</span>, <span class="hljs-number">16</span>, <span class="hljs-number">18</span>, <span class="hljs-number">20</span>, <span class="hljs-number">22</span>, <span class="hljs-number">24</span>, <span class="hljs-number">14</span>, <span class="hljs-number">16</span>, <span class="hljs-number">18</span>, <span class="hljs-number">20</span>, <span class="hljs-number">22</span>, <span class="hljs-number">24</span>, <span class="hljs-number">18</span>, <span class="hljs-number">20</span>, <span class="hljs-number">22</span>,
+                          <span class="hljs-number">6</span>,  <span class="hljs-number">6</span>, <span class="hljs-number">10</span>, <span class="hljs-number">10</span>, <span class="hljs-number">14</span>, <span class="hljs-number">14</span>],
+      dataRegionCols:   [ <span class="hljs-number">8</span>, <span class="hljs-number">10</span>, <span class="hljs-number">12</span>, <span class="hljs-number">14</span>, <span class="hljs-number">16</span>, <span class="hljs-number">18</span>, <span class="hljs-number">20</span>, <span class="hljs-number">22</span>, <span class="hljs-comment">// Number of columns per region</span>
+                          <span class="hljs-number">24</span>, <span class="hljs-number">14</span>, <span class="hljs-number">16</span>, <span class="hljs-number">18</span>, <span class="hljs-number">20</span>, <span class="hljs-number">22</span>, <span class="hljs-number">24</span>, <span class="hljs-number">14</span>, <span class="hljs-number">16</span>, <span class="hljs-number">18</span>, <span class="hljs-number">20</span>, <span class="hljs-number">22</span>, <span class="hljs-number">24</span>, <span class="hljs-number">18</span>, <span class="hljs-number">20</span>, <span class="hljs-number">22</span>,
+                          <span class="hljs-number">16</span>, <span class="hljs-number">14</span>, <span class="hljs-number">24</span>, <span class="hljs-number">16</span>, <span class="hljs-number">16</span>, <span class="hljs-number">22</span>],
+      regionRows:       [ <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-comment">// Number of regions per row</span>
+                          <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">6</span>, <span class="hljs-number">6</span>, <span class="hljs-number">6</span>,
+                          <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>],
+      regionCols:       [ <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-comment">// Number of regions per column</span>
+                          <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">6</span>, <span class="hljs-number">6</span>, <span class="hljs-number">6</span>,
+                          <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>],
+      interleavedBlocks:[ <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-comment">// Number of blocks</span>
+                          <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">6</span>, <span class="hljs-number">6</span>, <span class="hljs-number">8</span>, <span class="hljs-number">8</span>,
+                          <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>],
+      logTab:           [ -<span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">1</span>, <span class="hljs-number">240</span>, <span class="hljs-number">2</span>, <span class="hljs-number">225</span>, <span class="hljs-number">241</span>, <span class="hljs-number">53</span>, <span class="hljs-number">3</span>,  <span class="hljs-comment">// Table of log for the Galois field</span>
+                          <span class="hljs-number">38</span>, <span class="hljs-number">226</span>, <span class="hljs-number">133</span>, <span class="hljs-number">242</span>, <span class="hljs-number">43</span>, <span class="hljs-number">54</span>, <span class="hljs-number">210</span>, <span class="hljs-number">4</span>, <span class="hljs-number">195</span>, <span class="hljs-number">39</span>, <span class="hljs-number">114</span>, <span class="hljs-number">227</span>, <span class="hljs-number">106</span>, <span class="hljs-number">134</span>, <span class="hljs-number">28</span>, 
+                          <span class="hljs-number">243</span>, <span class="hljs-number">140</span>, <span class="hljs-number">44</span>, <span class="hljs-number">23</span>, <span class="hljs-number">55</span>, <span class="hljs-number">118</span>, <span class="hljs-number">211</span>, <span class="hljs-number">234</span>, <span class="hljs-number">5</span>, <span class="hljs-number">219</span>, <span class="hljs-number">196</span>, <span class="hljs-number">96</span>, <span class="hljs-number">40</span>, <span class="hljs-number">222</span>, <span class="hljs-number">115</span>, 
+                          <span class="hljs-number">103</span>, <span class="hljs-number">228</span>, <span class="hljs-number">78</span>, <span class="hljs-number">107</span>, <span class="hljs-number">125</span>, <span class="hljs-number">135</span>, <span class="hljs-number">8</span>, <span class="hljs-number">29</span>, <span class="hljs-number">162</span>, <span class="hljs-number">244</span>, <span class="hljs-number">186</span>, <span class="hljs-number">141</span>, <span class="hljs-number">180</span>, <span class="hljs-number">45</span>, <span class="hljs-number">99</span>, 
+                          <span class="hljs-number">24</span>, <span class="hljs-number">49</span>, <span class="hljs-number">56</span>, <span class="hljs-number">13</span>, <span class="hljs-number">119</span>, <span class="hljs-number">153</span>, <span class="hljs-number">212</span>, <span class="hljs-number">199</span>, <span class="hljs-number">235</span>, <span class="hljs-number">91</span>, <span class="hljs-number">6</span>, <span class="hljs-number">76</span>, <span class="hljs-number">220</span>, <span class="hljs-number">217</span>, <span class="hljs-number">197</span>, 
+                          <span class="hljs-number">11</span>, <span class="hljs-number">97</span>, <span class="hljs-number">184</span>, <span class="hljs-number">41</span>, <span class="hljs-number">36</span>, <span class="hljs-number">223</span>, <span class="hljs-number">253</span>, <span class="hljs-number">116</span>, <span class="hljs-number">138</span>, <span class="hljs-number">104</span>, <span class="hljs-number">193</span>, <span class="hljs-number">229</span>, <span class="hljs-number">86</span>, <span class="hljs-number">79</span>, <span class="hljs-number">171</span>, 
+                          <span class="hljs-number">108</span>, <span class="hljs-number">165</span>, <span class="hljs-number">126</span>, <span class="hljs-number">145</span>, <span class="hljs-number">136</span>, <span class="hljs-number">34</span>, <span class="hljs-number">9</span>, <span class="hljs-number">74</span>, <span class="hljs-number">30</span>, <span class="hljs-number">32</span>, <span class="hljs-number">163</span>, <span class="hljs-number">84</span>, <span class="hljs-number">245</span>, <span class="hljs-number">173</span>, <span class="hljs-number">187</span>, 
+                          <span class="hljs-number">204</span>, <span class="hljs-number">142</span>, <span class="hljs-number">81</span>, <span class="hljs-number">181</span>, <span class="hljs-number">190</span>, <span class="hljs-number">46</span>, <span class="hljs-number">88</span>, <span class="hljs-number">100</span>, <span class="hljs-number">159</span>, <span class="hljs-number">25</span>, <span class="hljs-number">231</span>, <span class="hljs-number">50</span>, <span class="hljs-number">207</span>, <span class="hljs-number">57</span>, <span class="hljs-number">147</span>, 
+                          <span class="hljs-number">14</span>, <span class="hljs-number">67</span>, <span class="hljs-number">120</span>, <span class="hljs-number">128</span>, <span class="hljs-number">154</span>, <span class="hljs-number">248</span>, <span class="hljs-number">213</span>, <span class="hljs-number">167</span>, <span class="hljs-number">200</span>, <span class="hljs-number">63</span>, <span class="hljs-number">236</span>, <span class="hljs-number">110</span>, <span class="hljs-number">92</span>, <span class="hljs-number">176</span>, <span class="hljs-number">7</span>, 
+                          <span class="hljs-number">161</span>, <span class="hljs-number">77</span>, <span class="hljs-number">124</span>, <span class="hljs-number">221</span>, <span class="hljs-number">102</span>, <span class="hljs-number">218</span>, <span class="hljs-number">95</span>, <span class="hljs-number">198</span>, <span class="hljs-number">90</span>, <span class="hljs-number">12</span>, <span class="hljs-number">152</span>, <span class="hljs-number">98</span>, <span class="hljs-number">48</span>, <span class="hljs-number">185</span>, <span class="hljs-number">179</span>, 
+                          <span class="hljs-number">42</span>, <span class="hljs-number">209</span>, <span class="hljs-number">37</span>, <span class="hljs-number">132</span>, <span class="hljs-number">224</span>, <span class="hljs-number">52</span>, <span class="hljs-number">254</span>, <span class="hljs-number">239</span>, <span class="hljs-number">117</span>, <span class="hljs-number">233</span>, <span class="hljs-number">139</span>, <span class="hljs-number">22</span>, <span class="hljs-number">105</span>, <span class="hljs-number">27</span>, <span class="hljs-number">194</span>, 
+                          <span class="hljs-number">113</span>, <span class="hljs-number">230</span>, <span class="hljs-number">206</span>, <span class="hljs-number">87</span>, <span class="hljs-number">158</span>, <span class="hljs-number">80</span>, <span class="hljs-number">189</span>, <span class="hljs-number">172</span>, <span class="hljs-number">203</span>, <span class="hljs-number">109</span>, <span class="hljs-number">175</span>, <span class="hljs-number">166</span>, <span class="hljs-number">62</span>, <span class="hljs-number">127</span>, 
+                          <span class="hljs-number">247</span>, <span class="hljs-number">146</span>, <span class="hljs-number">66</span>, <span class="hljs-number">137</span>, <span class="hljs-number">192</span>, <span class="hljs-number">35</span>, <span class="hljs-number">252</span>, <span class="hljs-number">10</span>, <span class="hljs-number">183</span>, <span class="hljs-number">75</span>, <span class="hljs-number">216</span>, <span class="hljs-number">31</span>, <span class="hljs-number">83</span>, <span class="hljs-number">33</span>, <span class="hljs-number">73</span>, 
+                          <span class="hljs-number">164</span>, <span class="hljs-number">144</span>, <span class="hljs-number">85</span>, <span class="hljs-number">170</span>, <span class="hljs-number">246</span>, <span class="hljs-number">65</span>, <span class="hljs-number">174</span>, <span class="hljs-number">61</span>, <span class="hljs-number">188</span>, <span class="hljs-number">202</span>, <span class="hljs-number">205</span>, <span class="hljs-number">157</span>, <span class="hljs-number">143</span>, <span class="hljs-number">169</span>, <span class="hljs-number">82</span>, 
+                          <span class="hljs-number">72</span>, <span class="hljs-number">182</span>, <span class="hljs-number">215</span>, <span class="hljs-number">191</span>, <span class="hljs-number">251</span>, <span class="hljs-number">47</span>, <span class="hljs-number">178</span>, <span class="hljs-number">89</span>, <span class="hljs-number">151</span>, <span class="hljs-number">101</span>, <span class="hljs-number">94</span>, <span class="hljs-number">160</span>, <span class="hljs-number">123</span>, <span class="hljs-number">26</span>, <span class="hljs-number">112</span>, 
+                          <span class="hljs-number">232</span>, <span class="hljs-number">21</span>, <span class="hljs-number">51</span>, <span class="hljs-number">238</span>, <span class="hljs-number">208</span>, <span class="hljs-number">131</span>, <span class="hljs-number">58</span>, <span class="hljs-number">69</span>, <span class="hljs-number">148</span>, <span class="hljs-number">18</span>, <span class="hljs-number">15</span>, <span class="hljs-number">16</span>, <span class="hljs-number">68</span>, <span class="hljs-number">17</span>, <span class="hljs-number">121</span>, <span class="hljs-number">149</span>, 
+                          <span class="hljs-number">129</span>, <span class="hljs-number">19</span>, <span class="hljs-number">155</span>, <span class="hljs-number">59</span>, <span class="hljs-number">249</span>, <span class="hljs-number">70</span>, <span class="hljs-number">214</span>, <span class="hljs-number">250</span>, <span class="hljs-number">168</span>, <span class="hljs-number">71</span>, <span class="hljs-number">201</span>, <span class="hljs-number">156</span>, <span class="hljs-number">64</span>, <span class="hljs-number">60</span>, <span class="hljs-number">237</span>, 
+                          <span class="hljs-number">130</span>, <span class="hljs-number">111</span>, <span class="hljs-number">20</span>, <span class="hljs-number">93</span>, <span class="hljs-number">122</span>, <span class="hljs-number">177</span>, <span class="hljs-number">150</span>],
+      aLogTab:          [ <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>, <span class="hljs-number">8</span>, <span class="hljs-number">16</span>, <span class="hljs-number">32</span>, <span class="hljs-number">64</span>, <span class="hljs-number">128</span>, <span class="hljs-number">45</span>, <span class="hljs-number">90</span>, <span class="hljs-comment">// Table of aLog for the Galois field</span>
+                          <span class="hljs-number">180</span>, <span class="hljs-number">69</span>, <span class="hljs-number">138</span>, <span class="hljs-number">57</span>, <span class="hljs-number">114</span>, <span class="hljs-number">228</span>, <span class="hljs-number">229</span>, <span class="hljs-number">231</span>, <span class="hljs-number">227</span>, <span class="hljs-number">235</span>, <span class="hljs-number">251</span>, <span class="hljs-number">219</span>, <span class="hljs-number">155</span>, <span class="hljs-number">27</span>, <span class="hljs-number">54</span>, 
+                          <span class="hljs-number">108</span>, <span class="hljs-number">216</span>, <span class="hljs-number">157</span>, <span class="hljs-number">23</span>, <span class="hljs-number">46</span>, <span class="hljs-number">92</span>, <span class="hljs-number">184</span>, <span class="hljs-number">93</span>, <span class="hljs-number">186</span>, <span class="hljs-number">89</span>, <span class="hljs-number">178</span>, <span class="hljs-number">73</span>, <span class="hljs-number">146</span>, <span class="hljs-number">9</span>, <span class="hljs-number">18</span>, <span class="hljs-number">36</span>, 
+                          <span class="hljs-number">72</span>, <span class="hljs-number">144</span>, <span class="hljs-number">13</span>, <span class="hljs-number">26</span>, <span class="hljs-number">52</span>, <span class="hljs-number">104</span>, <span class="hljs-number">208</span>, <span class="hljs-number">141</span>, <span class="hljs-number">55</span>, <span class="hljs-number">110</span>, <span class="hljs-number">220</span>, <span class="hljs-number">149</span>, <span class="hljs-number">7</span>, <span class="hljs-number">14</span>, <span class="hljs-number">28</span>, <span class="hljs-number">56</span>, 
+                          <span class="hljs-number">112</span>, <span class="hljs-number">224</span>, <span class="hljs-number">237</span>, <span class="hljs-number">247</span>, <span class="hljs-number">195</span>, <span class="hljs-number">171</span>, <span class="hljs-number">123</span>, <span class="hljs-number">246</span>, <span class="hljs-number">193</span>, <span class="hljs-number">175</span>, <span class="hljs-number">115</span>, <span class="hljs-number">230</span>, <span class="hljs-number">225</span>, <span class="hljs-number">239</span>, 
+                          <span class="hljs-number">243</span>, <span class="hljs-number">203</span>, <span class="hljs-number">187</span>, <span class="hljs-number">91</span>, <span class="hljs-number">182</span>, <span class="hljs-number">65</span>, <span class="hljs-number">130</span>, <span class="hljs-number">41</span>, <span class="hljs-number">82</span>, <span class="hljs-number">164</span>, <span class="hljs-number">101</span>, <span class="hljs-number">202</span>, <span class="hljs-number">185</span>, <span class="hljs-number">95</span>, <span class="hljs-number">190</span>, 
+                          <span class="hljs-number">81</span>, <span class="hljs-number">162</span>, <span class="hljs-number">105</span>, <span class="hljs-number">210</span>, <span class="hljs-number">137</span>, <span class="hljs-number">63</span>, <span class="hljs-number">126</span>, <span class="hljs-number">252</span>, <span class="hljs-number">213</span>, <span class="hljs-number">135</span>, <span class="hljs-number">35</span>, <span class="hljs-number">70</span>, <span class="hljs-number">140</span>, <span class="hljs-number">53</span>, <span class="hljs-number">106</span>, 
+                          <span class="hljs-number">212</span>, <span class="hljs-number">133</span>, <span class="hljs-number">39</span>, <span class="hljs-number">78</span>, <span class="hljs-number">156</span>, <span class="hljs-number">21</span>, <span class="hljs-number">42</span>, <span class="hljs-number">84</span>, <span class="hljs-number">168</span>, <span class="hljs-number">125</span>, <span class="hljs-number">250</span>, <span class="hljs-number">217</span>, <span class="hljs-number">159</span>, <span class="hljs-number">19</span>, <span class="hljs-number">38</span>, <span class="hljs-number">76</span>, 
+                          <span class="hljs-number">152</span>, <span class="hljs-number">29</span>, <span class="hljs-number">58</span>, <span class="hljs-number">116</span>, <span class="hljs-number">232</span>, <span class="hljs-number">253</span>, <span class="hljs-number">215</span>, <span class="hljs-number">131</span>, <span class="hljs-number">43</span>, <span class="hljs-number">86</span>, <span class="hljs-number">172</span>, <span class="hljs-number">117</span>, <span class="hljs-number">234</span>, <span class="hljs-number">249</span>, <span class="hljs-number">223</span>, 
+                          <span class="hljs-number">147</span>, <span class="hljs-number">11</span>, <span class="hljs-number">22</span>, <span class="hljs-number">44</span>, <span class="hljs-number">88</span>, <span class="hljs-number">176</span>, <span class="hljs-number">77</span>, <span class="hljs-number">154</span>, <span class="hljs-number">25</span>, <span class="hljs-number">50</span>, <span class="hljs-number">100</span>, <span class="hljs-number">200</span>, <span class="hljs-number">189</span>, <span class="hljs-number">87</span>, <span class="hljs-number">174</span>, <span class="hljs-number">113</span>, 
+                          <span class="hljs-number">226</span>, <span class="hljs-number">233</span>, <span class="hljs-number">255</span>, <span class="hljs-number">211</span>, <span class="hljs-number">139</span>, <span class="hljs-number">59</span>, <span class="hljs-number">118</span>, <span class="hljs-number">236</span>, <span class="hljs-number">245</span>, <span class="hljs-number">199</span>, <span class="hljs-number">163</span>, <span class="hljs-number">107</span>, <span class="hljs-number">214</span>, <span class="hljs-number">129</span>, 
+                          <span class="hljs-number">47</span>, <span class="hljs-number">94</span>, <span class="hljs-number">188</span>, <span class="hljs-number">85</span>, <span class="hljs-number">170</span>, <span class="hljs-number">121</span>, <span class="hljs-number">242</span>, <span class="hljs-number">201</span>, <span class="hljs-number">191</span>, <span class="hljs-number">83</span>, <span class="hljs-number">166</span>, <span class="hljs-number">97</span>, <span class="hljs-number">194</span>, <span class="hljs-number">169</span>, <span class="hljs-number">127</span>, 
+                          <span class="hljs-number">254</span>, <span class="hljs-number">209</span>, <span class="hljs-number">143</span>, <span class="hljs-number">51</span>, <span class="hljs-number">102</span>, <span class="hljs-number">204</span>, <span class="hljs-number">181</span>, <span class="hljs-number">71</span>, <span class="hljs-number">142</span>, <span class="hljs-number">49</span>, <span class="hljs-number">98</span>, <span class="hljs-number">196</span>, <span class="hljs-number">165</span>, <span class="hljs-number">103</span>, <span class="hljs-number">206</span>, 
+                          <span class="hljs-number">177</span>, <span class="hljs-number">79</span>, <span class="hljs-number">158</span>, <span class="hljs-number">17</span>, <span class="hljs-number">34</span>, <span class="hljs-number">68</span>, <span class="hljs-number">136</span>, <span class="hljs-number">61</span>, <span class="hljs-number">122</span>, <span class="hljs-number">244</span>, <span class="hljs-number">197</span>, <span class="hljs-number">167</span>, <span class="hljs-number">99</span>, <span class="hljs-number">198</span>, <span class="hljs-number">161</span>, 
+                          <span class="hljs-number">111</span>, <span class="hljs-number">222</span>, <span class="hljs-number">145</span>, <span class="hljs-number">15</span>, <span class="hljs-number">30</span>, <span class="hljs-number">60</span>, <span class="hljs-number">120</span>, <span class="hljs-number">240</span>, <span class="hljs-number">205</span>, <span class="hljs-number">183</span>, <span class="hljs-number">67</span>, <span class="hljs-number">134</span>, <span class="hljs-number">33</span>, <span class="hljs-number">66</span>, <span class="hljs-number">132</span>, 
+                          <span class="hljs-number">37</span>, <span class="hljs-number">74</span>, <span class="hljs-number">148</span>, <span class="hljs-number">5</span>, <span class="hljs-number">10</span>, <span class="hljs-number">20</span>, <span class="hljs-number">40</span>, <span class="hljs-number">80</span>, <span class="hljs-number">160</span>, <span class="hljs-number">109</span>, <span class="hljs-number">218</span>, <span class="hljs-number">153</span>, <span class="hljs-number">31</span>, <span class="hljs-number">62</span>, <span class="hljs-number">124</span>, <span class="hljs-number">248</span>, 
+                          <span class="hljs-number">221</span>, <span class="hljs-number">151</span>, <span class="hljs-number">3</span>, <span class="hljs-number">6</span>, <span class="hljs-number">12</span>, <span class="hljs-number">24</span>, <span class="hljs-number">48</span>, <span class="hljs-number">96</span>, <span class="hljs-number">192</span>, <span class="hljs-number">173</span>, <span class="hljs-number">119</span>, <span class="hljs-number">238</span>, <span class="hljs-number">241</span>, <span class="hljs-number">207</span>, <span class="hljs-number">179</span>, <span class="hljs-number">75</span>, 
+                          <span class="hljs-number">150</span>, <span class="hljs-number">1</span>],
+      champGaloisMult: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a, b)</span>{</span>  <span class="hljs-comment">// MULTIPLICATION IN GALOIS FIELD GF(2^8)</span>
+        <span class="hljs-keyword">if</span>(!a || !b) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.aLogTab[(<span class="hljs-keyword">this</span>.logTab[a] + <span class="hljs-keyword">this</span>.logTab[b]) % <span class="hljs-number">255</span>];
+      },
+      champGaloisDoub: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a, b)</span>{</span>  <span class="hljs-comment">// THE OPERATION a * 2^b IN GALOIS FIELD GF(2^8)</span>
+        <span class="hljs-keyword">if</span> (!a) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">if</span> (!b) <span class="hljs-keyword">return</span> a;
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.aLogTab[(<span class="hljs-keyword">this</span>.logTab[a] + b) % <span class="hljs-number">255</span>];
+      },
+      champGaloisSum: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a, b)</span>{</span> <span class="hljs-comment">// SUM IN GALOIS FIELD GF(2^8)</span>
+        <span class="hljs-keyword">return</span> a ^ b;
+      },
+      selectIndex: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(dataCodeWordsCount, rectangular)</span>{</span> <span class="hljs-comment">// CHOOSE THE GOOD INDEX FOR TABLES</span>
+        <span class="hljs-keyword">if</span> ((dataCodeWordsCount&lt;<span class="hljs-number">1</span> || dataCodeWordsCount&gt;<span class="hljs-number">1558</span>) &amp;&amp; !rectangular) <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+        <span class="hljs-keyword">if</span> ((dataCodeWordsCount&lt;<span class="hljs-number">1</span> || dataCodeWordsCount&gt;<span class="hljs-number">49</span>) &amp;&amp; rectangular)  <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+        
+        <span class="hljs-keyword">var</span> n = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">if</span> ( rectangular ) n = <span class="hljs-number">24</span>;
+        
+        <span class="hljs-keyword">while</span> (<span class="hljs-keyword">this</span>.dataCWCount[n] &lt; dataCodeWordsCount) n++;
+        <span class="hljs-keyword">return</span> n;
+      },
+      encodeDataCodeWordsASCII: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(text)</span> {</span>
+        <span class="hljs-keyword">var</span> dataCodeWords = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+        <span class="hljs-keyword">var</span> n = <span class="hljs-number">0</span>, i, c;
+        <span class="hljs-keyword">for</span> (i=<span class="hljs-number">0</span>; i&lt;text.length; i++){
+          c = text.charCodeAt(i);
+          <span class="hljs-keyword">if</span> (c &gt; <span class="hljs-number">127</span>) {  
+            dataCodeWords[n] = <span class="hljs-number">235</span>;
+            c = c - <span class="hljs-number">127</span>;
+            n++;
+          } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ((c&gt;=<span class="hljs-number">48</span> &amp;&amp; c&lt;=<span class="hljs-number">57</span>) &amp;&amp; (i+<span class="hljs-number">1</span>&lt;text.length) &amp;&amp; (text.charCodeAt(i+<span class="hljs-number">1</span>)&gt;=<span class="hljs-number">48</span> &amp;&amp; text.charCodeAt(i+<span class="hljs-number">1</span>)&lt;=<span class="hljs-number">57</span>)) {
+            c = ((c - <span class="hljs-number">48</span>) * <span class="hljs-number">10</span>) + ((text.charCodeAt(i+<span class="hljs-number">1</span>))-<span class="hljs-number">48</span>);
+            c += <span class="hljs-number">130</span>;
+            i++;
+          } <span class="hljs-keyword">else</span> c++; 
+          dataCodeWords[n] = c;
+          n++;
+        }
+        <span class="hljs-keyword">return</span> dataCodeWords;
+      },
+      addPadCW: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(tab, from, to)</span>{</span>    
+        <span class="hljs-keyword">if</span> (from &gt;= to) <span class="hljs-keyword">return</span> ;
+        tab[from] = <span class="hljs-number">129</span>;
+        <span class="hljs-keyword">var</span> r, i;
+        <span class="hljs-keyword">for</span> (i=from+<span class="hljs-number">1</span>; i&lt;to; i++){
+          r = ((<span class="hljs-number">149</span> * (i+<span class="hljs-number">1</span>)) % <span class="hljs-number">253</span>) + <span class="hljs-number">1</span>;
+          tab[i] = (<span class="hljs-number">129</span> + r) % <span class="hljs-number">254</span>;
+        }
+      },
+      calculSolFactorTable: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(solomonCWCount)</span>{</span> <span class="hljs-comment">// CALCULATE THE REED SOLOMON FACTORS</span>
+        <span class="hljs-keyword">var</span> g = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+        <span class="hljs-keyword">var</span> i, j;
+        
+        <span class="hljs-keyword">for</span> (i=<span class="hljs-number">0</span>; i&lt;=solomonCWCount; i++) g[i] = <span class="hljs-number">1</span>;
+        
+        <span class="hljs-keyword">for</span>(i = <span class="hljs-number">1</span>; i &lt;= solomonCWCount; i++) {
+          <span class="hljs-keyword">for</span>(j = i - <span class="hljs-number">1</span>; j &gt;= <span class="hljs-number">0</span>; j--) {
+            g[j] = <span class="hljs-keyword">this</span>.champGaloisDoub(g[j], i);  
+            <span class="hljs-keyword">if</span>(j &gt; <span class="hljs-number">0</span>) g[j] = <span class="hljs-keyword">this</span>.champGaloisSum(g[j], g[j-<span class="hljs-number">1</span>]);
+          }
+        }
+        <span class="hljs-keyword">return</span> g;
+      },
+      addReedSolomonCW: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(nSolomonCW, coeffTab, nDataCW, dataTab, blocks)</span>{</span> <span class="hljs-comment">// Add the Reed Solomon codewords</span>
+        <span class="hljs-keyword">var</span> temp = <span class="hljs-number">0</span>;    
+        <span class="hljs-keyword">var</span> errorBlocks = nSolomonCW / blocks;
+        <span class="hljs-keyword">var</span> correctionCW = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+        
+        <span class="hljs-keyword">var</span> i,j,k;
+        <span class="hljs-keyword">for</span>(k = <span class="hljs-number">0</span>; k &lt; blocks; k++) {      
+          <span class="hljs-keyword">for</span> (i=<span class="hljs-number">0</span>; i&lt;errorBlocks; i++) correctionCW[i] = <span class="hljs-number">0</span>;
+          
+          <span class="hljs-keyword">for</span> (i=k; i&lt;nDataCW; i=i+blocks){    
+            temp = <span class="hljs-keyword">this</span>.champGaloisSum(dataTab[i], correctionCW[errorBlocks-<span class="hljs-number">1</span>]);
+            <span class="hljs-keyword">for</span> (j=errorBlocks-<span class="hljs-number">1</span>; j&gt;=<span class="hljs-number">0</span>; j--){     
+              <span class="hljs-keyword">if</span> ( !temp ) {
+                correctionCW[j] = <span class="hljs-number">0</span>;
+              } <span class="hljs-keyword">else</span> { 
+                correctionCW[j] = <span class="hljs-keyword">this</span>.champGaloisMult(temp, coeffTab[j]);
+              }
+              <span class="hljs-keyword">if</span> (j&gt;<span class="hljs-number">0</span>) correctionCW[j] = <span class="hljs-keyword">this</span>.champGaloisSum(correctionCW[j-<span class="hljs-number">1</span>], correctionCW[j]);
+            }
+          }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>Renversement des blocs calcules</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          j = nDataCW + k;
+          <span class="hljs-keyword">for</span> (i=errorBlocks-<span class="hljs-number">1</span>; i&gt;=<span class="hljs-number">0</span>; i--){
+            dataTab[j] = correctionCW[i];
+            j=j+blocks;
+          }
+        }
+        <span class="hljs-keyword">return</span> dataTab;
+      },
+      getBits: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(entier)</span>{</span> <span class="hljs-comment">// Transform integer to tab of bits</span>
+        <span class="hljs-keyword">var</span> bits = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;<span class="hljs-number">8</span>; i++){
+          bits[i] = entier &amp; (<span class="hljs-number">128</span> &gt;&gt; i) ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>;
+        }
+        <span class="hljs-keyword">return</span> bits;
+      },
+      next: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(etape, totalRows, totalCols, codeWordsBits, datamatrix, assigned)</span>{</span> <span class="hljs-comment">// Place codewords into the matrix</span>
+        <span class="hljs-keyword">var</span> chr = <span class="hljs-number">0</span>; <span class="hljs-comment">// Place of the 8st bit from the first character to [4][0]</span>
+        <span class="hljs-keyword">var</span> row = <span class="hljs-number">4</span>;
+        <span class="hljs-keyword">var</span> col = <span class="hljs-number">0</span>;
+        
+        <span class="hljs-keyword">do</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>Check for a special case of corner</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">if</span>((row == totalRows) &amp;&amp; (col == <span class="hljs-number">0</span>)){
+            <span class="hljs-keyword">this</span>.patternShapeSpecial1(datamatrix, assigned, codeWordsBits[chr], totalRows, totalCols);  
+            chr++;
+          } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>((etape&lt;<span class="hljs-number">3</span>) &amp;&amp; (row == totalRows-<span class="hljs-number">2</span>) &amp;&amp; (col == <span class="hljs-number">0</span>) &amp;&amp; (totalCols%<span class="hljs-number">4</span> != <span class="hljs-number">0</span>)){
+            <span class="hljs-keyword">this</span>.patternShapeSpecial2(datamatrix, assigned, codeWordsBits[chr], totalRows, totalCols);
+            chr++;
+          } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>((row == totalRows-<span class="hljs-number">2</span>) &amp;&amp; (col == <span class="hljs-number">0</span>) &amp;&amp; (totalCols%<span class="hljs-number">8</span> == <span class="hljs-number">4</span>)){
+            <span class="hljs-keyword">this</span>.patternShapeSpecial3(datamatrix, assigned, codeWordsBits[chr], totalRows, totalCols);
+            chr++;
+          }
+          <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>((row == totalRows+<span class="hljs-number">4</span>) &amp;&amp; (col == <span class="hljs-number">2</span>) &amp;&amp; (totalCols%<span class="hljs-number">8</span> == <span class="hljs-number">0</span>)){
+            <span class="hljs-keyword">this</span>.patternShapeSpecial4(datamatrix, assigned, codeWordsBits[chr], totalRows, totalCols);
+            chr++;
+          }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>Go up and right in the datamatrix</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">do</span> {
+            <span class="hljs-keyword">if</span>((row &lt; totalRows) &amp;&amp; (col &gt;= <span class="hljs-number">0</span>) &amp;&amp; (assigned[row][col]!=<span class="hljs-number">1</span>)) {
+              <span class="hljs-keyword">this</span>.patternShapeStandard(datamatrix, assigned, codeWordsBits[chr], row, col, totalRows, totalCols);
+              chr++;
+            }
+            row -= <span class="hljs-number">2</span>;
+            col += <span class="hljs-number">2</span>;      
+          } <span class="hljs-keyword">while</span> ((row &gt;= <span class="hljs-number">0</span>) &amp;&amp; (col &lt; totalCols));
+          row += <span class="hljs-number">1</span>;
+          col += <span class="hljs-number">3</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>Go down and left in the datamatrix</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">do</span> {
+            <span class="hljs-keyword">if</span>((row &gt;= <span class="hljs-number">0</span>) &amp;&amp; (col &lt; totalCols) &amp;&amp; (assigned[row][col]!=<span class="hljs-number">1</span>)){
+              <span class="hljs-keyword">this</span>.patternShapeStandard(datamatrix, assigned, codeWordsBits[chr], row, col, totalRows, totalCols);
+              chr++;
+            }
+            row += <span class="hljs-number">2</span>;
+            col -= <span class="hljs-number">2</span>;
+          } <span class="hljs-keyword">while</span> ((row &lt; totalRows) &amp;&amp; (col &gt;=<span class="hljs-number">0</span>));
+          row += <span class="hljs-number">3</span>;
+          col += <span class="hljs-number">1</span>;
+        } <span class="hljs-keyword">while</span> ((row &lt; totalRows) || (col &lt; totalCols));
+      },
+      patternShapeStandard: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(datamatrix, assigned, bits, row, col, totalRows, totalCols)</span>{</span> <span class="hljs-comment">// Place bits in the matrix (standard or special case)</span>
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">0</span>], row-<span class="hljs-number">2</span>, col-<span class="hljs-number">2</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">1</span>], row-<span class="hljs-number">2</span>, col-<span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">2</span>], row-<span class="hljs-number">1</span>, col-<span class="hljs-number">2</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">3</span>], row-<span class="hljs-number">1</span>, col-<span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">4</span>], row-<span class="hljs-number">1</span>, col, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">5</span>], row, col-<span class="hljs-number">2</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">6</span>], row, col-<span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">7</span>], row,  col, totalRows, totalCols);
+      },  
+      patternShapeSpecial1: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(datamatrix, assigned, bits, totalRows, totalCols )</span>{</span>
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">0</span>], totalRows-<span class="hljs-number">1</span>,  <span class="hljs-number">0</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">1</span>], totalRows-<span class="hljs-number">1</span>,  <span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">2</span>], totalRows-<span class="hljs-number">1</span>,  <span class="hljs-number">2</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">3</span>], <span class="hljs-number">0</span>, totalCols-<span class="hljs-number">2</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">4</span>], <span class="hljs-number">0</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">5</span>], <span class="hljs-number">1</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">6</span>], <span class="hljs-number">2</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">7</span>], <span class="hljs-number">3</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+      },
+      patternShapeSpecial2: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(datamatrix, assigned, bits, totalRows, totalCols )</span>{</span>
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">0</span>], totalRows-<span class="hljs-number">3</span>,  <span class="hljs-number">0</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">1</span>], totalRows-<span class="hljs-number">2</span>,  <span class="hljs-number">0</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">2</span>], totalRows-<span class="hljs-number">1</span>,  <span class="hljs-number">0</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">3</span>], <span class="hljs-number">0</span>, totalCols-<span class="hljs-number">4</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">4</span>], <span class="hljs-number">0</span>, totalCols-<span class="hljs-number">3</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">5</span>], <span class="hljs-number">0</span>, totalCols-<span class="hljs-number">2</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">6</span>], <span class="hljs-number">0</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">7</span>], <span class="hljs-number">1</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+      },  
+      patternShapeSpecial3: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(datamatrix, assigned, bits, totalRows, totalCols )</span>{</span>
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">0</span>], totalRows-<span class="hljs-number">3</span>,  <span class="hljs-number">0</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">1</span>], totalRows-<span class="hljs-number">2</span>,  <span class="hljs-number">0</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">2</span>], totalRows-<span class="hljs-number">1</span>,  <span class="hljs-number">0</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">3</span>], <span class="hljs-number">0</span>, totalCols-<span class="hljs-number">2</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">4</span>], <span class="hljs-number">0</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">5</span>], <span class="hljs-number">1</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">6</span>], <span class="hljs-number">2</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">7</span>], <span class="hljs-number">3</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+      },
+      patternShapeSpecial4: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(datamatrix, assigned, bits, totalRows, totalCols )</span>{</span>
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">0</span>], totalRows-<span class="hljs-number">1</span>,  <span class="hljs-number">0</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">1</span>], totalRows-<span class="hljs-number">1</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">2</span>], <span class="hljs-number">0</span>, totalCols-<span class="hljs-number">3</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">3</span>], <span class="hljs-number">0</span>, totalCols-<span class="hljs-number">2</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">4</span>], <span class="hljs-number">0</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">5</span>], <span class="hljs-number">1</span>, totalCols-<span class="hljs-number">3</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">6</span>], <span class="hljs-number">1</span>, totalCols-<span class="hljs-number">2</span>, totalRows, totalCols);
+        <span class="hljs-keyword">this</span>.placeBitInDatamatrix(datamatrix, assigned, bits[<span class="hljs-number">7</span>], <span class="hljs-number">1</span>, totalCols-<span class="hljs-number">1</span>, totalRows, totalCols);
+      },
+      placeBitInDatamatrix: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(datamatrix, assigned, bit, row, col, totalRows, totalCols)</span>{</span> <span class="hljs-comment">// Put a bit into the matrix</span>
+        <span class="hljs-keyword">if</span> (row &lt; <span class="hljs-number">0</span>) {
+          row += totalRows;
+          col += <span class="hljs-number">4</span> - ((totalRows+<span class="hljs-number">4</span>)%<span class="hljs-number">8</span>);
+        }
+        <span class="hljs-keyword">if</span> (col &lt; <span class="hljs-number">0</span>) {
+          col += totalCols;
+          row += <span class="hljs-number">4</span> - ((totalCols+<span class="hljs-number">4</span>)%<span class="hljs-number">8</span>);
+        }
+        <span class="hljs-keyword">if</span> (assigned[row][col] != <span class="hljs-number">1</span>) {
+          datamatrix[row][col] = bit;
+          assigned[row][col] = <span class="hljs-number">1</span>;
+        }
+      },
+      addFinderPattern: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(datamatrix, rowsRegion, colsRegion, rowsRegionCW, colsRegionCW)</span>{</span> <span class="hljs-comment">// Add the finder pattern</span>
+        <span class="hljs-keyword">var</span> totalRowsCW = (rowsRegionCW+<span class="hljs-number">2</span>) * rowsRegion;
+        <span class="hljs-keyword">var</span> totalColsCW = (colsRegionCW+<span class="hljs-number">2</span>) * colsRegion;
+        
+        <span class="hljs-keyword">var</span> datamatrixTemp = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+        datamatrixTemp[<span class="hljs-number">0</span>] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j=<span class="hljs-number">0</span>; j&lt;totalColsCW+<span class="hljs-number">2</span>; j++){
+          datamatrixTemp[<span class="hljs-number">0</span>][j] = <span class="hljs-number">0</span>;
+        }
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;totalRowsCW; i++){
+          datamatrixTemp[i+<span class="hljs-number">1</span>] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+          datamatrixTemp[i+<span class="hljs-number">1</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;
+          datamatrixTemp[i+<span class="hljs-number">1</span>][totalColsCW+<span class="hljs-number">1</span>] = <span class="hljs-number">0</span>;
+          <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j=<span class="hljs-number">0</span>; j&lt;totalColsCW; j++){
+            <span class="hljs-keyword">if</span> (i%(rowsRegionCW+<span class="hljs-number">2</span>) == <span class="hljs-number">0</span>){
+              <span class="hljs-keyword">if</span> (j%<span class="hljs-number">2</span> == <span class="hljs-number">0</span>){
+                datamatrixTemp[i+<span class="hljs-number">1</span>][j+<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;
+              } <span class="hljs-keyword">else</span> { 
+                datamatrixTemp[i+<span class="hljs-number">1</span>][j+<span class="hljs-number">1</span>] = <span class="hljs-number">0</span>;
+              }
+            } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (i%(rowsRegionCW+<span class="hljs-number">2</span>) == rowsRegionCW+<span class="hljs-number">1</span>){ 
+              datamatrixTemp[i+<span class="hljs-number">1</span>][j+<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;
+            } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (j%(colsRegionCW+<span class="hljs-number">2</span>) == colsRegionCW+<span class="hljs-number">1</span>){
+              <span class="hljs-keyword">if</span> (i%<span class="hljs-number">2</span> == <span class="hljs-number">0</span>){
+                datamatrixTemp[i+<span class="hljs-number">1</span>][j+<span class="hljs-number">1</span>] = <span class="hljs-number">0</span>;
+              } <span class="hljs-keyword">else</span> {
+                datamatrixTemp[i+<span class="hljs-number">1</span>][j+<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;
+              }
+            } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (j%(colsRegionCW+<span class="hljs-number">2</span>) == <span class="hljs-number">0</span>){ 
+              datamatrixTemp[i+<span class="hljs-number">1</span>][j+<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;
+            } <span class="hljs-keyword">else</span>{
+              datamatrixTemp[i+<span class="hljs-number">1</span>][j+<span class="hljs-number">1</span>] = <span class="hljs-number">0</span>;
+              datamatrixTemp[i+<span class="hljs-number">1</span>][j+<span class="hljs-number">1</span>] = datamatrix[i-<span class="hljs-number">1</span>-(<span class="hljs-number">2</span>*(<span class="hljs-built_in">parseInt</span>(i/(rowsRegionCW+<span class="hljs-number">2</span>))))][j-<span class="hljs-number">1</span>-(<span class="hljs-number">2</span>*(<span class="hljs-built_in">parseInt</span>(j/(colsRegionCW+<span class="hljs-number">2</span>))))];
+            }
+          }
+        }
+        datamatrixTemp[totalRowsCW+<span class="hljs-number">1</span>] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j=<span class="hljs-number">0</span>; j&lt;totalColsCW+<span class="hljs-number">2</span>; j++){
+          datamatrixTemp[totalRowsCW+<span class="hljs-number">1</span>][j] = <span class="hljs-number">0</span>;
+        }
+        <span class="hljs-keyword">return</span> datamatrixTemp;
+      },
+      getDigit: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(text, rectangular)</span>{</span>
+        <span class="hljs-keyword">var</span> dataCodeWords = <span class="hljs-keyword">this</span>.encodeDataCodeWordsASCII(text); <span class="hljs-comment">// Code the text in the ASCII mode</span>
+        <span class="hljs-keyword">var</span> dataCWCount = dataCodeWords.length;
+        <span class="hljs-keyword">var</span> index = <span class="hljs-keyword">this</span>.selectIndex(dataCWCount, rectangular); <span class="hljs-comment">// Select the index for the data tables</span>
+        <span class="hljs-keyword">var</span> totalDataCWCount = <span class="hljs-keyword">this</span>.dataCWCount[index]; <span class="hljs-comment">// Number of data CW</span>
+        <span class="hljs-keyword">var</span> solomonCWCount = <span class="hljs-keyword">this</span>.solomonCWCount[index]; <span class="hljs-comment">// Number of Reed Solomon CW </span>
+        <span class="hljs-keyword">var</span> totalCWCount = totalDataCWCount + solomonCWCount; <span class="hljs-comment">// Number of CW      </span>
+        <span class="hljs-keyword">var</span> rowsTotal = <span class="hljs-keyword">this</span>.lengthRows[index]; <span class="hljs-comment">// Size of symbol</span>
+        <span class="hljs-keyword">var</span> colsTotal = <span class="hljs-keyword">this</span>.lengthCols[index];
+        <span class="hljs-keyword">var</span> rowsRegion = <span class="hljs-keyword">this</span>.regionRows[index]; <span class="hljs-comment">// Number of region</span>
+        <span class="hljs-keyword">var</span> colsRegion = <span class="hljs-keyword">this</span>.regionCols[index];
+        <span class="hljs-keyword">var</span> rowsRegionCW = <span class="hljs-keyword">this</span>.dataRegionRows[index];
+        <span class="hljs-keyword">var</span> colsRegionCW = <span class="hljs-keyword">this</span>.dataRegionCols[index];
+        <span class="hljs-keyword">var</span> rowsLengthMatrice = rowsTotal-<span class="hljs-number">2</span>*rowsRegion; <span class="hljs-comment">// Size of matrice data</span>
+        <span class="hljs-keyword">var</span> colsLengthMatrice = colsTotal-<span class="hljs-number">2</span>*colsRegion;
+        <span class="hljs-keyword">var</span> blocks = <span class="hljs-keyword">this</span>.interleavedBlocks[index];  <span class="hljs-comment">// Number of Reed Solomon blocks</span>
+        <span class="hljs-keyword">var</span> errorBlocks = (solomonCWCount / blocks);
+        
+        <span class="hljs-keyword">this</span>.addPadCW(dataCodeWords, dataCWCount, totalDataCWCount); <span class="hljs-comment">// Add codewords pads</span>
+        
+        <span class="hljs-keyword">var</span> g = <span class="hljs-keyword">this</span>.calculSolFactorTable(errorBlocks); <span class="hljs-comment">// Calculate correction coefficients</span>
+        
+        <span class="hljs-keyword">this</span>.addReedSolomonCW(solomonCWCount, g, totalDataCWCount, dataCodeWords, blocks); <span class="hljs-comment">// Add Reed Solomon codewords</span>
+        
+        <span class="hljs-keyword">var</span> codeWordsBits = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(); <span class="hljs-comment">// Calculte bits from codewords</span>
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;totalCWCount; i++){
+          codeWordsBits[i] = <span class="hljs-keyword">this</span>.getBits(dataCodeWords[i]);
+        }
+        
+        <span class="hljs-keyword">var</span> datamatrix = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(); <span class="hljs-comment">// Put data in the matrix</span>
+        <span class="hljs-keyword">var</span> assigned = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+        
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;colsLengthMatrice; i++){
+          datamatrix[i] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+          assigned[i] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>Add the bottom-right corner if needed</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> ( ((rowsLengthMatrice * colsLengthMatrice) % <span class="hljs-number">8</span>) == <span class="hljs-number">4</span>) {
+          datamatrix[rowsLengthMatrice-<span class="hljs-number">2</span>][colsLengthMatrice-<span class="hljs-number">2</span>] = <span class="hljs-number">1</span>;
+          datamatrix[rowsLengthMatrice-<span class="hljs-number">1</span>][colsLengthMatrice-<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;
+          datamatrix[rowsLengthMatrice-<span class="hljs-number">1</span>][colsLengthMatrice-<span class="hljs-number">2</span>] = <span class="hljs-number">0</span>;
+          datamatrix[rowsLengthMatrice-<span class="hljs-number">2</span>][colsLengthMatrice-<span class="hljs-number">1</span>] = <span class="hljs-number">0</span>;
+          assigned[rowsLengthMatrice-<span class="hljs-number">2</span>][colsLengthMatrice-<span class="hljs-number">2</span>] = <span class="hljs-number">1</span>;
+          assigned[rowsLengthMatrice-<span class="hljs-number">1</span>][colsLengthMatrice-<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;
+          assigned[rowsLengthMatrice-<span class="hljs-number">1</span>][colsLengthMatrice-<span class="hljs-number">2</span>] = <span class="hljs-number">1</span>;
+          assigned[rowsLengthMatrice-<span class="hljs-number">2</span>][colsLengthMatrice-<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>Put the codewords into the matrix</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">this</span>.next(<span class="hljs-number">0</span>,rowsLengthMatrice,colsLengthMatrice, codeWordsBits, datamatrix, assigned);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>Add the finder pattern</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        datamatrix = <span class="hljs-keyword">this</span>.addFinderPattern(datamatrix, rowsRegion, colsRegion, rowsRegionCW, colsRegionCW);
+        
+        <span class="hljs-keyword">return</span> datamatrix;
+      }
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <p>little endian convertor</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    lec:{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p>convert an int</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      cInt: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(value, byteCount)</span>{</span>
+        <span class="hljs-keyword">var</span> le = <span class="hljs-string">''</span>;
+        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;byteCount; i++){
+          le += <span class="hljs-built_in">String</span>.fromCharCode(value &amp; <span class="hljs-number">0xFF</span>);
+          value = value &gt;&gt; <span class="hljs-number">8</span>;
+        }
+        <span class="hljs-keyword">return</span> le;
+      },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <p>return a byte string from rgb values </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      cRgb: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(r,g,b)</span>{</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">String</span>.fromCharCode(b) + <span class="hljs-built_in">String</span>.fromCharCode(g) + <span class="hljs-built_in">String</span>.fromCharCode(r);
+      },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p>return a byte string from a hex string color</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      cHexColor: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(hex)</span>{</span>
+        <span class="hljs-keyword">var</span> v = <span class="hljs-built_in">parseInt</span>(<span class="hljs-string">'0x'</span> + hex.substr(<span class="hljs-number">1</span>));
+        <span class="hljs-keyword">var</span> b = v &amp; <span class="hljs-number">0xFF</span>;
+        v = v &gt;&gt; <span class="hljs-number">8</span>;
+        <span class="hljs-keyword">var</span> g = v &amp; <span class="hljs-number">0xFF</span>;
+        <span class="hljs-keyword">var</span> r = v &gt;&gt; <span class="hljs-number">8</span>;
+        <span class="hljs-keyword">return</span>(<span class="hljs-keyword">this</span>.cRgb(r,g,b));
+      }
+    },
+    hexToRGB: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(hex)</span>{</span>
+      <span class="hljs-keyword">var</span> v = <span class="hljs-built_in">parseInt</span>(<span class="hljs-string">'0x'</span> + hex.substr(<span class="hljs-number">1</span>));
+      <span class="hljs-keyword">var</span> b = v &amp; <span class="hljs-number">0xFF</span>;
+      v = v &gt;&gt; <span class="hljs-number">8</span>;
+      <span class="hljs-keyword">var</span> g = v &amp; <span class="hljs-number">0xFF</span>;
+      <span class="hljs-keyword">var</span> r = v &gt;&gt; <span class="hljs-number">8</span>;
+      <span class="hljs-keyword">return</span>({r:r,g:g,b:b});
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <p>test if a string is a hexa string color (like #FF0000)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    isHexColor: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(value)</span>{</span>
+      <span class="hljs-keyword">var</span> r = <span class="hljs-keyword">new</span> <span class="hljs-built_in">RegExp</span>(<span class="hljs-string">"#[0-91-F]"</span>, <span class="hljs-string">"gi"</span>);
+      <span class="hljs-keyword">return</span>  value.match(r);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <p>encode data in base64</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    base64Encode: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(value)</span> {</span>
+      <span class="hljs-keyword">var</span> r = <span class="hljs-string">''</span>, c1, c2, c3, b1, b2, b3, b4;
+      <span class="hljs-keyword">var</span> k = <span class="hljs-string">"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="</span>;
+      <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>;
+      <span class="hljs-keyword">while</span> (i &lt; value.length) {
+        c1 = value.charCodeAt(i++);
+        c2 = value.charCodeAt(i++);
+        c3 = value.charCodeAt(i++);
+        b1 = c1 &gt;&gt; <span class="hljs-number">2</span>;
+        b2 = ((c1 &amp; <span class="hljs-number">3</span>) &lt;&lt; <span class="hljs-number">4</span>) | (c2 &gt;&gt; <span class="hljs-number">4</span>);
+        b3 = ((c2 &amp; <span class="hljs-number">15</span>) &lt;&lt; <span class="hljs-number">2</span>) | (c3 &gt;&gt; <span class="hljs-number">6</span>);
+        b4 = c3 &amp; <span class="hljs-number">63</span>;
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isNaN</span>(c2)) b3 = b4 = <span class="hljs-number">64</span>;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isNaN</span>(c3)) b4 = <span class="hljs-number">64</span>;
+        r += k.charAt(b1) + k.charAt(b2) + k.charAt(b3) + k.charAt(b4);
+      }
+      <span class="hljs-keyword">return</span> r;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <p>convert a bit string to an array of array of bit char</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    bitStringTo2DArray: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">( digit )</span>{</span>
+      <span class="hljs-keyword">var</span> d = []; d[<span class="hljs-number">0</span>] = [];
+      <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;digit.length; i++) d[<span class="hljs-number">0</span>][i] = digit.charAt(i);
+      <span class="hljs-keyword">return</span>(d);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <p>clear jQuery Target</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    resize: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, w)</span>{</span>
+      $container
+        .css(<span class="hljs-string">"padding"</span>, <span class="hljs-string">"0px"</span>)
+        .css(<span class="hljs-string">"overflow"</span>, <span class="hljs-string">"auto"</span>)
+        .css(<span class="hljs-string">"width"</span>, w + <span class="hljs-string">"px"</span>)
+        .html(<span class="hljs-string">""</span>);
+        <span class="hljs-keyword">return</span> $container;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <p>bmp barcode renderer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    digitToBmpRenderer: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, settings, digit, hri, mw, mh)</span>{</span>
+      <span class="hljs-keyword">var</span> lines = digit.length;
+      <span class="hljs-keyword">var</span> columns = digit[<span class="hljs-number">0</span>].length;
+      <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>;
+      <span class="hljs-keyword">var</span> c0 = <span class="hljs-keyword">this</span>.isHexColor(settings.bgColor) ? <span class="hljs-keyword">this</span>.lec.cHexColor(settings.bgColor) : <span class="hljs-keyword">this</span>.lec.cRgb(<span class="hljs-number">255</span>,<span class="hljs-number">255</span>,<span class="hljs-number">255</span>);
+      <span class="hljs-keyword">var</span> c1 = <span class="hljs-keyword">this</span>.isHexColor(settings.color) ? <span class="hljs-keyword">this</span>.lec.cHexColor(settings.color) : <span class="hljs-keyword">this</span>.lec.cRgb(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>);
+      <span class="hljs-keyword">var</span> bar0 = <span class="hljs-string">''</span>;
+      <span class="hljs-keyword">var</span> bar1 = <span class="hljs-string">''</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <p>create one bar 0 and 1 of “mw” byte length </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;mw; i++){
+        bar0 += c0;
+        bar1 += c1;
+      }
+      <span class="hljs-keyword">var</span> bars = <span class="hljs-string">''</span>;
+    
+      <span class="hljs-keyword">var</span> padding = (<span class="hljs-number">4</span> - ((mw * columns * <span class="hljs-number">3</span>) % <span class="hljs-number">4</span>)) % <span class="hljs-number">4</span>; <span class="hljs-comment">// Padding for 4 byte alignment ("* 3" come from "3 byte to color R, G and B")</span>
+      <span class="hljs-keyword">var</span> dataLen = (mw * columns + padding) * mh * lines;
+    
+      <span class="hljs-keyword">var</span> pad = <span class="hljs-string">''</span>;
+      <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>; i&lt;padding; i++) pad += <span class="hljs-string">'\0'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <p>Bitmap header</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">var</span> bmp = <span class="hljs-string">'BM'</span> +                            <span class="hljs-comment">// Magic Number</span>
+                <span class="hljs-keyword">this</span>.lec.cInt(<span class="hljs-number">54</span> + dataLen, <span class="hljs-number">4</span>) +  <span class="hljs-comment">// Size of Bitmap size (header size + data len)</span>
+                <span class="hljs-string">'\0\0\0\0'</span> +                      <span class="hljs-comment">// Unused</span>
+                <span class="hljs-keyword">this</span>.lec.cInt(<span class="hljs-number">54</span>, <span class="hljs-number">4</span>) +            <span class="hljs-comment">// The offset where the bitmap data (pixels) can be found</span>
+                <span class="hljs-keyword">this</span>.lec.cInt(<span class="hljs-number">40</span>, <span class="hljs-number">4</span>) +            <span class="hljs-comment">// The number of bytes in the header (from this point).</span>
+                <span class="hljs-keyword">this</span>.lec.cInt(mw * columns, <span class="hljs-number">4</span>) +  <span class="hljs-comment">// width</span>
+                <span class="hljs-keyword">this</span>.lec.cInt(mh * lines, <span class="hljs-number">4</span>) +    <span class="hljs-comment">// height</span>
+                <span class="hljs-keyword">this</span>.lec.cInt(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>) +             <span class="hljs-comment">// Number of color planes being used</span>
+                <span class="hljs-keyword">this</span>.lec.cInt(<span class="hljs-number">24</span>, <span class="hljs-number">2</span>) +            <span class="hljs-comment">// The number of bits/pixel</span>
+                <span class="hljs-string">'\0\0\0\0'</span> +                      <span class="hljs-comment">// BI_RGB, No compression used</span>
+                <span class="hljs-keyword">this</span>.lec.cInt(dataLen, <span class="hljs-number">4</span>) +       <span class="hljs-comment">// The size of the raw BMP data (after this header)</span>
+                <span class="hljs-keyword">this</span>.lec.cInt(<span class="hljs-number">2835</span>, <span class="hljs-number">4</span>) +          <span class="hljs-comment">// The horizontal resolution of the image (pixels/meter)</span>
+                <span class="hljs-keyword">this</span>.lec.cInt(<span class="hljs-number">2835</span>, <span class="hljs-number">4</span>) +          <span class="hljs-comment">// The vertical resolution of the image (pixels/meter)</span>
+                <span class="hljs-keyword">this</span>.lec.cInt(<span class="hljs-number">0</span>, <span class="hljs-number">4</span>) +             <span class="hljs-comment">// Number of colors in the palette</span>
+                <span class="hljs-keyword">this</span>.lec.cInt(<span class="hljs-number">0</span>, <span class="hljs-number">4</span>);              <span class="hljs-comment">// Means all colors are important</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <p>Bitmap Data</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> y=lines-<span class="hljs-number">1</span>; y&gt;=<span class="hljs-number">0</span>; y--){
+        <span class="hljs-keyword">var</span> line = <span class="hljs-string">''</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> x=<span class="hljs-number">0</span>; x&lt;columns; x++){
+          line += digit[y][x] == <span class="hljs-string">'0'</span> ? bar0 : bar1;
+        }
+        line += pad;
+        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> k=<span class="hljs-number">0</span>; k&lt;mh; k++){
+          bmp += line;
+        }
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-64">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-64">&#182;</a>
+              </div>
+              <p>set bmp image to the container</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">var</span> object = document.createElement(<span class="hljs-string">'object'</span>);
+      object.setAttribute(<span class="hljs-string">'type'</span>, <span class="hljs-string">'image/bmp'</span>);
+      object.setAttribute(<span class="hljs-string">'data'</span>, <span class="hljs-string">'data:image/bmp;base64,'</span>+ <span class="hljs-keyword">this</span>.base64Encode(bmp));
+      <span class="hljs-keyword">this</span>.resize($container, mw * columns + padding).append(object);
+                      
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-65">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-65">&#182;</a>
+              </div>
+              <p>bmp 1D barcode renderer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    digitToBmp: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, settings, digit, hri)</span>{</span>
+      <span class="hljs-keyword">var</span> w = barcode.intval(settings.barWidth);
+      <span class="hljs-keyword">var</span> h = barcode.intval(settings.barHeight);
+      <span class="hljs-keyword">this</span>.digitToBmpRenderer($container, settings, <span class="hljs-keyword">this</span>.bitStringTo2DArray(digit), hri, w, h);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-66">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-66">&#182;</a>
+              </div>
+              <p>bmp 2D barcode renderer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    digitToBmp2D: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, settings, digit, hri)</span>{</span>
+      <span class="hljs-keyword">var</span> s = barcode.intval(settings.moduleSize);
+      <span class="hljs-keyword">this</span>.digitToBmpRenderer($container, settings, digit, hri, s, s);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-67">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-67">&#182;</a>
+              </div>
+              <p>css barcode renderer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    digitToCssRenderer : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, settings, digit, hri, mw, mh)</span>{</span>
+      <span class="hljs-keyword">var</span> lines = digit.length;
+      <span class="hljs-keyword">var</span> columns = digit[<span class="hljs-number">0</span>].length;
+      <span class="hljs-keyword">var</span> content = <span class="hljs-string">""</span>;
+      <span class="hljs-keyword">var</span> bar0 = <span class="hljs-string">"&lt;div style=\"float: left; font-size: 0px; background-color: "</span> + settings.bgColor + <span class="hljs-string">"; height: "</span> + mh + <span class="hljs-string">"px; width: &amp;Wpx\"&gt;&lt;/div&gt;"</span>;    
+      <span class="hljs-keyword">var</span> bar1 = <span class="hljs-string">"&lt;div style=\"float: left; font-size: 0px; width:0; border-left: &amp;Wpx solid "</span> + settings.color + <span class="hljs-string">"; height: "</span> + mh + <span class="hljs-string">"px;\"&gt;&lt;/div&gt;"</span>;
+  
+      <span class="hljs-keyword">var</span> len, current;
+      <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> y=<span class="hljs-number">0</span>; y&lt;lines; y++){
+        len = <span class="hljs-number">0</span>;
+        current = digit[y][<span class="hljs-number">0</span>];
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> x=<span class="hljs-number">0</span>; x&lt;columns; x++){
+          <span class="hljs-keyword">if</span> ( current == digit[y][x] ) {
+            len++;
+          } <span class="hljs-keyword">else</span> {
+            content += (current == <span class="hljs-string">'0'</span> ? bar0 : bar1).replace(<span class="hljs-string">"&amp;W"</span>, len * mw);
+            current = digit[y][x];
+            len=<span class="hljs-number">1</span>;
+          }
+        }
+        <span class="hljs-keyword">if</span> (len &gt; <span class="hljs-number">0</span>){
+          content += (current == <span class="hljs-string">'0'</span> ? bar0 : bar1).replace(<span class="hljs-string">"&amp;W"</span>, len * mw);
+        }
+      }  
+      <span class="hljs-keyword">if</span> (settings.showHRI){
+        content += <span class="hljs-string">"&lt;div style=\"clear:both; width: 100%; background-color: "</span> + settings.bgColor + <span class="hljs-string">"; color: "</span> + settings.color + <span class="hljs-string">"; text-align: center; font-size: "</span> + settings.fontSize + <span class="hljs-string">"px; margin-top: "</span> + settings.marginHRI + <span class="hljs-string">"px;\"&gt;"</span>+hri+<span class="hljs-string">"&lt;/div&gt;"</span>;
+      }
+      <span class="hljs-keyword">this</span>.resize($container, mw * columns).html(content);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-68">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-68">&#182;</a>
+              </div>
+              <p>css 1D barcode renderer  </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    digitToCss: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, settings, digit, hri)</span>{</span>
+      <span class="hljs-keyword">var</span> w = barcode.intval(settings.barWidth);
+      <span class="hljs-keyword">var</span> h = barcode.intval(settings.barHeight);
+      <span class="hljs-keyword">this</span>.digitToCssRenderer($container, settings, <span class="hljs-keyword">this</span>.bitStringTo2DArray(digit), hri, w, h);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-69">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-69">&#182;</a>
+              </div>
+              <p>css 2D barcode renderer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    digitToCss2D: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, settings, digit, hri)</span>{</span>
+      <span class="hljs-keyword">var</span> s = barcode.intval(settings.moduleSize);
+      <span class="hljs-keyword">this</span>.digitToCssRenderer($container, settings, digit, hri, s, s);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-70">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-70">&#182;</a>
+              </div>
+              <p>svg barcode renderer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    digitToSvgRenderer: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, settings, digit, hri, mw, mh)</span>{</span>
+      <span class="hljs-keyword">var</span> lines = digit.length;
+      <span class="hljs-keyword">var</span> columns = digit[<span class="hljs-number">0</span>].length;
+      
+      <span class="hljs-keyword">var</span> width = mw * columns;
+      <span class="hljs-keyword">var</span> height = mh * lines;
+      <span class="hljs-keyword">if</span> (settings.showHRI){
+        <span class="hljs-keyword">var</span> fontSize = barcode.intval(settings.fontSize);
+        height += barcode.intval(settings.marginHRI) + fontSize;
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-71">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-71">&#182;</a>
+              </div>
+              <p>svg header</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">var</span> svg = <span class="hljs-string">'&lt;svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="'</span> + width + <span class="hljs-string">'" height="'</span> + height + <span class="hljs-string">'"&gt;'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-72">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-72">&#182;</a>
+              </div>
+              <p>background</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      svg += <span class="hljs-string">'&lt;rect width="'</span> +  width + <span class="hljs-string">'" height="'</span> + height + <span class="hljs-string">'" x="0" y="0" fill="'</span> + settings.bgColor + <span class="hljs-string">'" /&gt;'</span>;
+      
+      <span class="hljs-keyword">var</span> bar1 = <span class="hljs-string">'&lt;rect width="&amp;W" height="'</span> + mh + <span class="hljs-string">'" x="&amp;X" y="&amp;Y" fill="'</span> + settings.color + <span class="hljs-string">'" /&gt;'</span>;
+      
+      <span class="hljs-keyword">var</span> len, current;
+      <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> y=<span class="hljs-number">0</span>; y&lt;lines; y++){
+        len = <span class="hljs-number">0</span>;
+        current = digit[y][<span class="hljs-number">0</span>];
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> x=<span class="hljs-number">0</span>; x&lt;columns; x++){
+          <span class="hljs-keyword">if</span> ( current == digit[y][x] ) {
+            len++;
+          } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">if</span> (current == <span class="hljs-string">'1'</span>) {
+              svg += bar1.replace(<span class="hljs-string">"&amp;W"</span>, len * mw).replace(<span class="hljs-string">"&amp;X"</span>, (x - len) * mw).replace(<span class="hljs-string">"&amp;Y"</span>, y * mh);
+            }
+            current = digit[y][x];
+            len=<span class="hljs-number">1</span>;
+          }
+        }
+        <span class="hljs-keyword">if</span> ( (len &gt; <span class="hljs-number">0</span>) &amp;&amp; (current == <span class="hljs-string">'1'</span>) ){
+          svg += bar1.replace(<span class="hljs-string">"&amp;W"</span>, len * mw).replace(<span class="hljs-string">"&amp;X"</span>, (columns - len) * mw).replace(<span class="hljs-string">"&amp;Y"</span>, y * mh);
+        }
+      }
+      
+      <span class="hljs-keyword">if</span> (settings.showHRI){
+        svg += <span class="hljs-string">'&lt;g transform="translate('</span> + <span class="hljs-built_in">Math</span>.floor(width/<span class="hljs-number">2</span>) + <span class="hljs-string">' 0)"&gt;'</span>;
+        svg += <span class="hljs-string">'&lt;text y="'</span> + (height - <span class="hljs-built_in">Math</span>.floor(fontSize/<span class="hljs-number">2</span>)) + <span class="hljs-string">'" text-anchor="middle" style="font-family: Arial; font-size: '</span> + fontSize + <span class="hljs-string">'px;" fill="'</span> + settings.color + <span class="hljs-string">'"&gt;'</span> + hri + <span class="hljs-string">'&lt;/text&gt;'</span>;
+        svg += <span class="hljs-string">'&lt;/g&gt;'</span>;
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-73">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-73">&#182;</a>
+              </div>
+              <p>svg footer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      svg += <span class="hljs-string">'&lt;/svg&gt;'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-74">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-74">&#182;</a>
+              </div>
+              <p>create a dom object, flush container and add object to the container</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">var</span> object = document.createElement(<span class="hljs-string">'object'</span>);
+      object.setAttribute(<span class="hljs-string">'type'</span>, <span class="hljs-string">'image/svg+xml'</span>);
+      object.setAttribute(<span class="hljs-string">'data'</span>, <span class="hljs-string">'data:image/svg+xml,'</span>+ svg);
+      <span class="hljs-keyword">this</span>.resize($container, width).append(object);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-75">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-75">&#182;</a>
+              </div>
+              <p>svg 1D barcode renderer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    digitToSvg: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, settings, digit, hri)</span>{</span>
+      <span class="hljs-keyword">var</span> w = barcode.intval(settings.barWidth);
+      <span class="hljs-keyword">var</span> h = barcode.intval(settings.barHeight);
+      <span class="hljs-keyword">this</span>.digitToSvgRenderer($container, settings, <span class="hljs-keyword">this</span>.bitStringTo2DArray(digit), hri, w, h);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-76">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-76">&#182;</a>
+              </div>
+              <p>svg 2D barcode renderer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    digitToSvg2D: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, settings, digit, hri)</span>{</span>
+      <span class="hljs-keyword">var</span> s = barcode.intval(settings.moduleSize);
+      <span class="hljs-keyword">this</span>.digitToSvgRenderer($container, settings, digit, hri, s, s);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-77">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-77">&#182;</a>
+              </div>
+              <p>canvas barcode renderer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    digitToCanvasRenderer : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, settings, digit, hri, xi, yi, mw, mh)</span>{</span>
+      <span class="hljs-keyword">var</span> canvas = $container.get(<span class="hljs-number">0</span>);
+      <span class="hljs-keyword">if</span> ( !canvas || !canvas.getContext ) <span class="hljs-keyword">return</span>; <span class="hljs-comment">// not compatible</span>
+      
+      <span class="hljs-keyword">var</span> lines = digit.length;
+      <span class="hljs-keyword">var</span> columns = digit[<span class="hljs-number">0</span>].length;
+      
+      <span class="hljs-keyword">var</span> ctx = canvas.getContext(<span class="hljs-string">'2d'</span>);
+      ctx.lineWidth = <span class="hljs-number">1</span>;
+      ctx.lineCap = <span class="hljs-string">'butt'</span>;
+      ctx.fillStyle = settings.bgColor;
+      ctx.fillRect (xi, yi, columns * mw, lines * mh);
+      
+      ctx.fillStyle = settings.color;
+      
+      <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> y=<span class="hljs-number">0</span>; y&lt;lines; y++){
+        <span class="hljs-keyword">var</span> len = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">var</span> current = digit[y][<span class="hljs-number">0</span>];
+        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> x=<span class="hljs-number">0</span>; x&lt;columns; x++){
+          <span class="hljs-keyword">if</span> (current == digit[y][x]) {
+            len++;
+          } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">if</span> (current == <span class="hljs-string">'1'</span>){
+              ctx.fillRect (xi + (x - len) * mw, yi + y * mh, mw * len, mh);
+            }
+            current = digit[y][x];
+            len=<span class="hljs-number">1</span>;
+          }
+        }
+        <span class="hljs-keyword">if</span> ( (len &gt; <span class="hljs-number">0</span>) &amp;&amp; (current == <span class="hljs-string">'1'</span>) ){
+          ctx.fillRect (xi + (columns - len) * mw, yi + y * mh, mw * len, mh);
+        }
+      }
+      <span class="hljs-keyword">if</span> (settings.showHRI){
+        <span class="hljs-keyword">var</span> dim = ctx.measureText(hri);
+        ctx.fillText(hri, xi + <span class="hljs-built_in">Math</span>.floor((columns * mw - dim.width)/<span class="hljs-number">2</span>), yi + lines * mh + settings.fontSize + settings.marginHRI);
+      }
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-78">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-78">&#182;</a>
+              </div>
+              <p>canvas 1D barcode renderer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    digitToCanvas: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, settings, digit, hri)</span>{</span>
+      <span class="hljs-keyword">var</span> w  = barcode.intval(settings.barWidth);
+      <span class="hljs-keyword">var</span> h = barcode.intval(settings.barHeight);
+      <span class="hljs-keyword">var</span> x = barcode.intval(settings.posX);
+      <span class="hljs-keyword">var</span> y = barcode.intval(settings.posY);
+      <span class="hljs-keyword">this</span>.digitToCanvasRenderer($container, settings, <span class="hljs-keyword">this</span>.bitStringTo2DArray(digit), hri, x, y, w, h);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-79">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-79">&#182;</a>
+              </div>
+              <p>canvas 2D barcode renderer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    digitToCanvas2D: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($container, settings, digit, hri)</span>{</span>
+      <span class="hljs-keyword">var</span> s = barcode.intval(settings.moduleSize);
+      <span class="hljs-keyword">var</span> x = barcode.intval(settings.posX);
+      <span class="hljs-keyword">var</span> y = barcode.intval(settings.posY);
+      <span class="hljs-keyword">this</span>.digitToCanvasRenderer($container, settings, digit, hri, x, y, s, s);
+    }
+  };
+  
+  $.fn.extend({
+    barcode: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(datas, type, settings)</span> {</span>
+      <span class="hljs-keyword">var</span> digit = <span class="hljs-string">""</span>,
+          hri   = <span class="hljs-string">""</span>,
+          code  = <span class="hljs-string">""</span>,
+          crc   = <span class="hljs-literal">true</span>,
+          rect  = <span class="hljs-literal">false</span>,
+          b2d   = <span class="hljs-literal">false</span>;
+      
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span>(datas) == <span class="hljs-string">"string"</span>){
+        code = datas;
+      } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span>(datas) == <span class="hljs-string">"object"</span>){
+        code = <span class="hljs-keyword">typeof</span>(datas.code) == <span class="hljs-string">"string"</span> ? datas.code : <span class="hljs-string">""</span>;
+        crc = <span class="hljs-keyword">typeof</span>(datas.crc) != <span class="hljs-string">"undefined"</span> ? datas.crc : <span class="hljs-literal">true</span>;
+        rect = <span class="hljs-keyword">typeof</span>(datas.rect) != <span class="hljs-string">"undefined"</span> ? datas.rect : <span class="hljs-literal">false</span>;
+      }
+      <span class="hljs-keyword">if</span> (code == <span class="hljs-string">""</span>) <span class="hljs-keyword">return</span>(<span class="hljs-literal">false</span>);
+      
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span>(settings) == <span class="hljs-string">"undefined"</span>) settings = [];
+      <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> name <span class="hljs-keyword">in</span> barcode.settings){
+        <span class="hljs-keyword">if</span> (settings[name] == <span class="hljs-literal">undefined</span>) settings[name] = barcode.settings[name];
+      }
+      
+      <span class="hljs-keyword">switch</span>(type){
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"std25"</span>:
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"int25"</span>:
+          digit = barcode.i25.getDigit(code, crc, type);
+          hri = barcode.i25.compute(code, crc, type);
+        <span class="hljs-keyword">break</span>;
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"ean8"</span>:
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"ean13"</span>:
+          digit = barcode.ean.getDigit(code, type);
+          hri = barcode.ean.compute(code, type);
+        <span class="hljs-keyword">break</span>;
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"upc"</span>:
+          digit = barcode.upc.getDigit(code);
+          hri = barcode.upc.compute(code);
+        <span class="hljs-keyword">break</span>;
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"code11"</span>:
+          digit = barcode.code11.getDigit(code);
+          hri = code;
+        <span class="hljs-keyword">break</span>;
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"code39"</span>:
+          digit = barcode.code39.getDigit(code);
+          hri = code;
+        <span class="hljs-keyword">break</span>;
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"code93"</span>:
+          digit = barcode.code93.getDigit(code, crc);
+          hri = code;
+        <span class="hljs-keyword">break</span>;
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"code128"</span>:
+          digit = barcode.code128.getDigit(code);
+          hri = code;
+        <span class="hljs-keyword">break</span>;
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"codabar"</span>:
+          digit = barcode.codabar.getDigit(code);
+          hri = code;
+        <span class="hljs-keyword">break</span>;
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"msi"</span>:
+          digit = barcode.msi.getDigit(code, crc);
+          hri = barcode.msi.compute(code, crc);
+        <span class="hljs-keyword">break</span>;
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"datamatrix"</span>:   
+          digit = barcode.datamatrix.getDigit(code, rect);
+          hri = code;
+          b2d = <span class="hljs-literal">true</span>;
+        <span class="hljs-keyword">break</span>; 
+      }
+      <span class="hljs-keyword">if</span> (digit.length == <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span>($(<span class="hljs-keyword">this</span>));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-80">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-80">&#182;</a>
+              </div>
+              <p>Quiet Zone</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> ( !b2d &amp;&amp; settings.addQuietZone) digit = <span class="hljs-string">"0000000000"</span> + digit + <span class="hljs-string">"0000000000"</span>;
+      
+      <span class="hljs-keyword">var</span> $<span class="hljs-keyword">this</span> = $(<span class="hljs-keyword">this</span>);
+      <span class="hljs-keyword">var</span> fname = <span class="hljs-string">'digitTo'</span> + settings.output.charAt(<span class="hljs-number">0</span>).toUpperCase() + settings.output.substr(<span class="hljs-number">1</span>) + (b2d ? <span class="hljs-string">'2D'</span> : <span class="hljs-string">''</span>);
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span>(barcode[fname]) == <span class="hljs-string">'function'</span>) {
+        barcode[fname]($<span class="hljs-keyword">this</span>, settings, digit, hri);
+      }
+      
+      <span class="hljs-keyword">return</span>($<span class="hljs-keyword">this</span>);
+    }
+  });
+
+}(jQuery));</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

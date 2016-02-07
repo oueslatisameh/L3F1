@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+    android:background="@color/fond"
+	android:orientation="horizontal" >
+ 
+   <TableLayout 
+		android:layout_height="wrap_content" 
+		android:layout_width="match_parent"
+		android:layout_marginTop="25px"
+		android:layout_marginBottom="25px">
+				
+		<TableRow 
+		    android:layout_width="match_parent"
+			android:layout_height="wrap_content" 
+			android:paddingLeft="4sp"
+			android:baselineAligned="true">
+		    	
+             <LinearLayout
+				android:orientation="horizontal" 
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content" 
+				android:paddingLeft="20sp"
+				android:layout_weight="1"
+				android:layout_gravity="center_vertical">
+ 
+			<TextView 
+				android:id="@+id/nomListe" 
+				android:layout_width="match_parent"
+				android:layout_height="match_parent" 
+				android:textSize="20sp"
+				android:textStyle="italic" 
+				android:text="Liste " 
+				android:layout_marginRight="10px"/>			
+ 
+		     </LinearLayout>
+
+      </TableRow>
+      
+    </TableLayout>
+    
+</LinearLayout>

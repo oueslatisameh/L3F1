@@ -1,0 +1,32 @@
+doctype
+html
+	include inc/head
+	body
+		include inc/header
+		include inc/script
+		script(src="/js/sha1.js")
+		script(src="/js/validator.min.js")
+		script(src="/js/jquery-registration.js")
+		.jumbotron#jumb
+			if err 
+				.alert.alert-warning.alert-dismissable
+					button(type="button", data-dismiss="alert", aria-hidden="true").close &times;
+					strong Erreur!
+					each error in err
+						div= error
+			h1 inscription a scanOID
+			br
+			p afin de finaliser l'inscription un email sera envoyé à l'adresse email
+			mixin form(sers)
+				- each ser in sers
+					.form-group
+						label(for=ser.nameAttr).col-sm-2.control-label= ser.chaAttr
+						.col-sm-2
+							input(type=(!ser.type ? "text" : ser.type), name=ser.nameAttr, placeholder=ser.chaAttr, id=ser.nameAttr).form-control
+			form(role="form", action="/registration", method="post").form-horizontal#forr
+				+form ([{nameAttr : "name", chaAttr : "Nom"}, {nameAttr : "forename", chaAttr : "Prenom"},
+					{nameAttr : "email", chaAttr : "Adresse Email"}, {nameAttr : "password", chaAttr : "Mot de passe", type : "password"},{nameAttr : "cpassword", chaAttr : "Confirmation", type : "password"}, {nameAttr : "birth", chaAttr : "Date de naissance", type : "date"},{nameAttr : "address", chaAttr : "Adresse"}, {nameAttr : "postcode", chaAttr : "Code postal"},{nameAttr : "town", chaAttr : "ville"}])
+				br
+				p
+			button(onClick="verify();").btn.btn-success Envoyer
+			button(onClick="reset();").btn.btn-warning rafraichir

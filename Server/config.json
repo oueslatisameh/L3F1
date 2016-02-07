@@ -1,0 +1,126 @@
+{
+  "config" : {
+    "port" : 80,
+    "app" : "ScanOID",
+    "urldev" : "127.0.0.1:5433",
+    "secret" : "scanoid"
+  },
+
+  "schedule" : {
+      "statDay" : 1,
+      "statHour" : 0,
+      "statMin" : 0,
+      "statSec" : 0,
+      "productDay" : 1,
+      "productHour" : 1,
+      "productMin" : 0,
+      "productSec" : 0
+  },
+
+  "email" : {
+    "mail_address" : "application.scanoid@gmail.com",
+    "mail_password" : "tbhbsmemtnl3i1"
+  },
+
+  "misc" : {
+    "numberClientPostPrice" : 1,
+    "timeConnexion" : 5400,
+    "timeEmail" : 259200,
+    "sizeRandomEmail" : 128,
+    "sizeRandomPassword" : 16,
+    "nominatimURL" : "nominatim.openstreetmap.org"
+  },
+
+  "redis" : {
+    "db_port" : 6379,
+    "db_host" : "127.0.0.1",
+    "db_app" : "scanoid",
+    "db_uapp" : "userscanoid",
+    "db_pass" : "tbhbsmemtnl3i1"
+
+
+  },
+
+  "stats" : [
+    "product_research",
+    "connection",
+    "registration",
+    "price_entry"
+  ],
+
+  "postgresql" : {
+    "db_host" : "127.0.0.1",
+    "db_name" : "postgres",
+    "db_port" : 5433,
+    "db_user" : "postgres",
+    "db_pass" : "azerty",
+    "pool_min" : 10,
+    "pool_max" : 10,
+    "pool_idleTimeoutMillis" : 30000,
+    "pool_log" : false
+  },
+
+  "web" : {
+    "title" : "ScanOID",
+    "authors" : [
+      "Thomas Benouali",
+      "Haythem Boussadia",
+      "Stephane Meresse",
+      "Elliott Muenier-Gaulin",
+      "Toutel Ntatla-Yonguet"
+    ],
+    "keywords" : [
+      "collaboratif",
+      "produit",
+      "magasin",
+      "moins chere"
+    ],
+    "content_type" : "text/html",
+    "charset" : "UTF-8"
+  },
+
+  "admin" : {
+    "files" : [
+      {
+        "name" : "config.json",
+        "path" : "./"
+      },
+      {
+        "name" : "package.json",
+        "path" : "./"
+      }
+    ],
+    "administrators" : [
+      "muenier.elliott@gmail.com",
+      "steph.meresse@gmail.com",
+      "application.scanoid@gmail.com"
+    ]
+  },
+
+  "stringError" : {
+    "serverError" : "le serveur à rencontré une erreur",
+    "redisError" : "la base de données redis a renvoyé une erreur",
+    "postgresqlError" : "la base de données postgreSQL a renvoyé une erreur",
+    "nodemailerError" : "un email n'a pas pu être envoyé à votre adresse",
+    "noAuthorization" : "vous ne pouvez pas acceder à ce service"
+  },
+
+  "stringRL" : {
+    "formBirth" : "la date de naissance n'est pas valide ex : 10-10-1000",
+    "formAddress" : "l'addresse ne doit contenir que des lettres et des chiffres [0-9a-zA-Z]",
+    "formPostcode" : "l'addresse ne doit contenir que des chiffres [0-9]",
+    "formTown" : "l'addresse ne doit contenir que des lettres [a-zA-Z]",
+    "formForename" : "le prenom ne doit contenir que des lettres [a-zA-Z]",
+    "missingForeName" : "le prenom n'a pas été saisie",
+    "formName" : "le nom ne doit contenir que des lettres [a-zA-Z]",
+    "missingName" : "le nom n'a pas été saisie",
+    "formEmail" : "l'adresse n'est pas valide ex : scanoid@gmail.com",
+    "missingEmail" : "l'adresse email n'a pas été saisie",
+    "existEmail" : "l'adresse email existe déja",
+    "notExistEmail" : "l'adresse email n'existe pas dans la base de données",
+    "formPassword" : "le mot de passe ne doit contenir que des lettres et des chiffres [0-9a-zA-Z]",
+    "missingPassword" : "le mot de passe n'a pas été saisie",
+    "notSamePassword" : "deux passwords différents ont été entré",
+    "login" : "Vos identifiants sont incorrects. Merci de réessayer"
+  }
+}

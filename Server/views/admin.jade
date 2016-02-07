@@ -1,0 +1,100 @@
+doctype
+html
+	mixin osMix(elements)
+		each element in elements
+			p
+				b= element.name
+				| #{" : " + os[element.cmd]()}
+	include inc/head
+	body
+		style.
+			.blob {
+				color : #8CC84B;
+			} .my-fluid-container {
+				padding-left: 15px;
+				padding-right: 15px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+		include inc/script
+		script(type="text/javascript", src="/editArea/edit_area_full.js")
+		script(type="text/javascript", src="/js/Chart.min.js")
+		script(type="text/javascript", src="/js/jquery-admin.js")
+		ul.nav.nav-tabs#myTab
+			li: a(href="#system", data-toggle="tab") System
+			li.active: a(href="#config", data-toggle="tab") Config
+		.tab-content
+			.tab-pane#system
+				.col-lg-12
+					h1 system
+					hr
+					.col-lg-9
+						.col-lg-12
+							.col-lg-4
+								h3 Memory
+								hr
+								.panel.panel-default.col-lg-12
+									canvas(height="250", width="240")#processMEM
+							.col-lg-4
+								h3 CPU
+								hr
+								.panel.panel-default.col-lg-12
+									canvas(height="245", width="240")#processCPU
+							.col-lg-4
+								h3 Miscellaneous
+								hr
+								div.panel.panel-default.col-lg-12
+									+osMix(elem)
+						.col-lg-12
+							.col-lg-8
+								h3 Statistiques
+								hr
+								.panel.panel-default.col-lg-12
+									canvas(height="350", width="500")#activity
+							.col-lg-4
+								h3 Network Interfaces
+								hr
+								each net, index in nets
+									h4= index
+									.list-group.col-lg-12
+										each sub in net
+											.list-group-item.col-lg-12: .list-group-item-text
+												each val, index in sub
+													| #{val}
+													br
+					.col-lg-3
+						h3 CPUs
+						hr
+						div.panel.panel-default.col-lg-12
+							each cpu in cpus
+								b= cpu.model
+								ul
+									li= 'speed : ' + cpu.speed
+									each val, index in cpu.times
+										li= index + ' : ' + val
+			.tab-pane.active#config
+				br
+				.container.col-lg-6
+					div(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade#myModal
+						.modal-dialog
+							.modal-content
+								.modal-header
+									button(type="button", data-dismiss="modal", aria-hidden="true").close &times;
+									h4 	choisissez un fichier
+								.modal-body
+									.list-group#myModalListGroup
+								.modal-footer
+									button(type=button, data-dismiss="modal").btn.btn-default fermer
+									button(type=button, onclick="loadFileInTextArea();").btn.btn-default ouvrir
+					textarea(id="configTextArea", name="config").
+						setTimeout(function() {alert("coucou");}, 1000);
+	script.
+		$('textarea#configTextArea')
+			.css('height', ($(window).height() -70) + "")
+			.css('width', "100%");
+		$("document").ready(function() {
+			setTimeout(function() {
+				init();
+			}, 10);
+		});
+		setTimeout(function() {$('#myTab a[href="#system"]').tab('show');}, 400);

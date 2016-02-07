@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>jquery-map.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="Chart.min.html">
+                Chart.min.js
+              </a>
+            
+              
+              <a class="source" href="bootstrap-sidebar.html">
+                bootstrap-sidebar.js
+              </a>
+            
+              
+              <a class="source" href="bootstrap.html">
+                bootstrap.js
+              </a>
+            
+              
+              <a class="source" href="bootstrap.min.html">
+                bootstrap.min.js
+              </a>
+            
+              
+              <a class="source" href="holder.html">
+                holder.js
+              </a>
+            
+              
+              <a class="source" href="jquery-1.3.2.min.html">
+                jquery-1.3.2.min.js
+              </a>
+            
+              
+              <a class="source" href="jquery-account.html">
+                jquery-account.js
+              </a>
+            
+              
+              <a class="source" href="jquery-admin.html">
+                jquery-admin.js
+              </a>
+            
+              
+              <a class="source" href="jquery-barcode.html">
+                jquery-barcode.js
+              </a>
+            
+              
+              <a class="source" href="jquery-card.html">
+                jquery-card.js
+              </a>
+            
+              
+              <a class="source" href="jquery-faddress.html">
+                jquery-faddress.js
+              </a>
+            
+              
+              <a class="source" href="jquery-list.html">
+                jquery-list.js
+              </a>
+            
+              
+              <a class="source" href="jquery-lookingforproduct.html">
+                jquery-lookingforproduct.js
+              </a>
+            
+              
+              <a class="source" href="jquery-map.html">
+                jquery-map.js
+              </a>
+            
+              
+              <a class="source" href="jquery-product.html">
+                jquery-product.js
+              </a>
+            
+              
+              <a class="source" href="jquery-registration.html">
+                jquery-registration.js
+              </a>
+            
+              
+              <a class="source" href="jquery.min.html">
+                jquery.min.js
+              </a>
+            
+              
+              <a class="source" href="sha1.html">
+                sha1.js
+              </a>
+            
+              
+              <a class="source" href="validator.min.html">
+                validator.min.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>jquery-map.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <table border="1">
+<tr>
+    <th>contenu dans la page </th> <th><b>product.jade</b></th>
+</tr>
+</table>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> map;
+<span class="hljs-keyword">var</span> longitude;
+<span class="hljs-keyword">var</span> latitude;
+<span class="hljs-keyword">var</span> ean;
+<span class="hljs-keyword">var</span> typeRequest;
+<span class="hljs-keyword">var</span> markersGroup = L.layerGroup([]);
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">readyPosition</span><span class="hljs-params">(position)</span> {</span>
+	longitude = position.coords.longitude;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>position de</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	latitude = position.coords.latitude;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>l’utilisateur</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	typeRequest = {
+		near : {
+			url : <span class="hljs-string">'/shop/near/product'</span>,
+			data : <span class="hljs-string">'ean='</span> + ean + <span class="hljs-string">"&amp;lon="</span> + longitude + <span class="hljs-string">"&amp;lat="</span> + latitude,
+		},
+		faddress : {
+			url : <span class="hljs-string">'/shop/near/productFavAddr'</span>,
+			data : <span class="hljs-string">'ean='</span> + ean,
+		},
+		fshop : {
+			url : <span class="hljs-string">'/shop/near/productFavShop'</span>,
+			data : <span class="hljs-string">'ean='</span> + ean,
+		}
+	};
+	initmap();
+	getAddrShop(<span class="hljs-string">'near'</span>);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p><b>initmap</b> : initialise la carte leaflet en faisant appel au service Nominatim<br /></p>
+<ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : création de la carte + marqueurs des magasins</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">initmap</span><span class="hljs-params">()</span> {</span><span class="hljs-comment">// identique à initmap dans jquery-faddress.js en dehors de l'ajout des marqueurs</span>
+	map = L.map(<span class="hljs-string">'map'</span>).setView([latitude, longitude], <span class="hljs-number">16</span>);
+	L.tileLayer(<span class="hljs-string">'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'</span>, {
+		attribution : <span class="hljs-string">'Map data &amp;copy; &lt;a href="http://openstreetmap.org"&gt;OpenStreetMap&lt;/a&gt; contributors, &lt;a href="http://creativecommons.org/licenses/by-sa/2.0/"&gt;CC-BY-SA&lt;/a&gt;, Imagery © &lt;a href="http://mapnik.org/"&gt;MapNik&lt;/a&gt;'</span>,
+		maxZoom : <span class="hljs-number">18</span>
+	}).addTo(map);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">affichMarker</span><span class="hljs-params">(lon, lat)</span> {</span>
+	map.panTo(<span class="hljs-keyword">new</span> L.LatLng(lat, lon));
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addaddr</span><span class="hljs-params">(shop_id)</span> {</span>
+	$.ajax({
+		url : <span class="hljs-string">'/favorite/shop/'</span> + shop_id,
+		type : <span class="hljs-string">'POST'</span>,
+		dataType : <span class="hljs-string">"json"</span>,
+		complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+			json = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText); <span class="hljs-comment">// parsage de la réponse</span>
+			<span class="hljs-keyword">if</span> (result == <span class="hljs-string">'success'</span> &amp;&amp; json.registered == <span class="hljs-string">'success'</span>) {
+			}
+		}
+	});
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">supaddr</span><span class="hljs-params">(shop_id)</span> {</span>
+	$.ajax({
+		url : <span class="hljs-string">'/favorite/shop/'</span> + shop_id,
+		type : <span class="hljs-string">'DELETE'</span>,
+		dataType : <span class="hljs-string">"json"</span>,
+		complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+			json = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText); <span class="hljs-comment">// parsage de la réponse</span>
+			<span class="hljs-keyword">if</span> (result == <span class="hljs-string">'success'</span> &amp;&amp; json.registered == <span class="hljs-string">'success'</span>) {
+			}
+		}
+	});
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">formatageBody</span><span class="hljs-params">(nom, distance, price, promotion, type, descriptif, numero, rue, ville, postal)</span> {</span>
+	<span class="hljs-keyword">var</span> head = <span class="hljs-string">'&lt;h4 class="list-group-item-heading"&gt;&lt;blob&gt;'</span> + nom + <span class="hljs-string">'&lt;/blob&gt;&lt;/h4&gt;'</span>;
+	<span class="hljs-keyword">var</span> all = <span class="hljs-string">'&lt;b&gt;prix&lt;/b&gt; : '</span> + price + <span class="hljs-string">'&amp;#x20AC&lt;br /&gt;'</span> +
+	<span class="hljs-string">'&lt;b&gt;distance&lt;/b&gt; : '</span> + <span class="hljs-built_in">Math</span>.round(distance * <span class="hljs-number">1000000</span>) / <span class="hljs-number">10</span> + <span class="hljs-string">'m&lt;br /&gt;'</span> +
+	<span class="hljs-string">'&lt;b&gt;type&lt;/b&gt; : '</span> + type + <span class="hljs-string">'&lt;br /&gt;'</span> + 
+	<span class="hljs-string">'&lt;b&gt;description&lt;/b&gt; : '</span> + descriptif + <span class="hljs-string">'&lt;br /&gt;'</span> + 
+	<span class="hljs-string">'&lt;b&gt;adresse&lt;/b&gt; : '</span> + (numero || <span class="hljs-string">""</span>) + <span class="hljs-string">' '</span> + rue + <span class="hljs-string">' '</span> + ville + <span class="hljs-string">' '</span> + postal + <span class="hljs-string">'&lt;br /&gt;'</span>;
+	<span class="hljs-keyword">return</span> (head + all);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">formatageButton</span><span class="hljs-params">(longitude, latitude, shop_id, name)</span> {</span>
+	<span class="hljs-keyword">var</span> affich = <span class="hljs-string">'&lt;span onCLick=\"affichMarker('</span> + longitude + <span class="hljs-string">', '</span> + latitude + <span class="hljs-string">');\" '</span> + <span class="hljs-string">'class=\"btn btn-warning btn-sm"&gt;&lt;span class=\"glyphicon glyphicon-search\"&gt;&lt;/span&gt;&lt;/span&gt;'</span>;
+	<span class="hljs-keyword">var</span> add = <span class="hljs-string">'&lt;span onCLick=\"addaddr('</span> + shop_id + <span class="hljs-string">');\" '</span> + <span class="hljs-string">'class=\"btn btn-success btn-sm"&gt;&lt;span class=\"glyphicon glyphicon-plus\"&gt;&lt;/span&gt;&lt;/span&gt;'</span>;
+	<span class="hljs-keyword">var</span> del = <span class="hljs-literal">null</span>;
+	<span class="hljs-keyword">if</span> (name == <span class="hljs-string">"fshop"</span>) {
+		del = <span class="hljs-string">'&lt;span onCLick=\"supaddr('</span> + shop_id + <span class="hljs-string">');\" '</span> + <span class="hljs-string">'class=\"btn btn-danger btn-sm"&gt;&lt;span class=\"glyphicon glyphicon-remove\"&gt;&lt;/span&gt;&lt;/span&gt;'</span>;
+	}
+	<span class="hljs-keyword">return</span> (affich + add + (del || <span class="hljs-string">""</span>));
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getAddrShop</span><span class="hljs-params">(name)</span> {</span>
+	element = typeRequest[name];
+	$.ajax({<span class="hljs-comment">// requête AJAX</span>
+		url : element.url, <span class="hljs-comment">// URL vers le serveur</span>
+		type : <span class="hljs-string">'GET'</span>, <span class="hljs-comment">// type de requête HTTP</span>
+		dataType : <span class="hljs-string">"json"</span>, <span class="hljs-comment">// type de données attendu</span>
+		data : element.data, <span class="hljs-comment">// envoie des coordonnées de l'utilisateur</span>
+		complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+			json = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText);
+			<span class="hljs-keyword">if</span> (result == <span class="hljs-string">'success'</span> &amp;&amp; json.registered == <span class="hljs-string">'success'</span>) {
+				<span class="hljs-keyword">var</span> re, divElement, divText, divBody, divButton;
+				<span class="hljs-keyword">var</span> div = $(<span class="hljs-string">'div#Shop'</span>);
+				div.html(<span class="hljs-string">""</span>);
+				markersGroup.clearLayers();
+				<span class="hljs-keyword">for</span> ( y = <span class="hljs-number">0</span>; y &lt; json.results.length; ++y) {
+					re = json.results[y];
+					divElement = $(<span class="hljs-string">'&lt;div&gt;&lt;/div&gt;'</span>).addClass(<span class="hljs-string">'list-group-item'</span>);
+					divText = $(<span class="hljs-string">'&lt;div&gt;&lt;/div&gt;'</span>).addClass(<span class="hljs-string">'list-group-item-text'</span>);
+					divBody = $(<span class="hljs-string">'&lt;div&gt;&lt;/div&gt;'</span>);
+					divBody.html(formatageBody(re.shop_name, re.distance, re.price, re.ispromotion, 
+						re.shop_type, re.shop_descriptive, re.shop_house_num, re.shop_road, 
+						re.shop_town, re.shop_postcode));
+					divButton = $(<span class="hljs-string">'&lt;div&gt;&lt;/div&gt;'</span>);
+					divButton.html(formatageButton(re.shop_longitude, re.shop_latitude, re.shop_id, name));
+					div.append(divElement.append(divText.append(divBody).append(divButton)));
+					markersGroup.addLayer(L.marker([re.shop_latitude, re.shop_longitude]).bindPopup(re.shop_name));
+				}
+				markersGroup.addTo(map);
+				$(<span class="hljs-string">'div#Shop'</span>).append(div);
+			}
+		}
+	});
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

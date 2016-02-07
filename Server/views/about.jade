@@ -1,0 +1,130 @@
+doctype
+html
+	include inc/head
+	style.
+		.bg {
+			background: url('/img/magasin.jpg') no-repeat center center;
+			position: fixed;
+			width: 100%;
+			height: 350px;
+			top:0;
+			left:0;
+			z-index: -1;
+		} .jumbotron {
+			margin-bottom: 0px;
+			height: 350px;
+			color: white;
+			text-shadow: black 0.3em 0.3em 0.3em;
+			background:transparent;
+		} .colorjumb {
+			padding-top : 100px;
+			padding-bottom : 100px;
+			background-color : #303030;
+		}  .colorju {
+			padding-top : 100px;
+			padding-bottom : 400px;
+			background-color : #FFFFFF;
+		} .colorju img {
+			width : 250px;
+			height : 250px;
+		} .photos img {
+			width : 150px;
+			height : 150px;
+		} .photos {
+			text-align : center;
+			color : #909090;
+		} .photos p {
+			font-size : 1em;
+			color : #BDBDBD;
+		} .containerPresentation {
+			height : 650px;
+		} .fullText h2 {
+			color : #5A5A5A;
+			font-size : 4em;
+		} .fullText small {
+			color : #999999;
+			font-size : 1em;
+		} .fullText p {
+			color : #5A5A5A;
+			font-size : 1.5em;		
+		} .testImg {
+			height : 540px;
+			text-align : center;
+		} .helper {
+			display: inline-block;
+			height: 100%;
+			vertical-align: middle;
+		} .testImg img {
+			vertical-align:middle;
+			width : 250px;
+			height : 250px;		
+		}
+	body
+		include inc/header
+		.bg
+		.jumbotron
+			h1 A propos de ScanOID
+		.container.containerPresentation
+			.fullText.col-lg-7
+				h2 ScanOID,
+					small  une application de tous les jours !
+				p.
+					Dans la vie courante, la plupart des produits sont étiquetés à l'aide de code-barres. Lors du passage en caisse d'un client, ces code-barres sont scannés afin de retrouver le prix du produit. La correspondance entre la signalétique du code-barre et le prix d'un produit est propre à chaque magasin.
+				p.
+					Un même produit pouvant avoir des prix différents selon le magasin où il est vendu, il est intéressant pour le consommateur de savoir de façon claire et objective dans quel établissement il paiera le moins cher le produit qu'il souhaite acheter.
+				p.
+					Ce projet, proposé dans le cadre de l'UE « Projets Tutorés » de la troisième année de licence informatique de l'université Paris Descartes, s'inscrit donc dans cette optique.
+			.fullText.col-lg-5
+				.testImg
+					span.helper
+					img(src="/img/paris_descartes.png", alt="paris Descartes")
+		.colorjumb
+			.container
+				.row
+					.photos.col-lg-4
+						img(src="/img/Thomas_Benouali.png", alt="Thomas Benouali").img-circle
+						h2 Thomas Benouali
+						p.
+							Email : thomas.benouali@laposte.net
+					.photos.col-lg-4
+						img(src="/img/Haythem_Boussaadia.png", alt="Haythem Boussaadia").img-circle
+						h2 Haythem Boussaadia
+						p.
+							Facebook : haythem.boussadia<br />
+							Email : boussaadiahaythem@gmail.com
+					.photos.col-lg-4
+						img(src="/img/Stephane_Meresse.png", alt="Stephane Meresse").img-circle
+						h2 Stephane Meresse
+						p.
+							Facebook : stephane.meresse.5<br />
+							Email : steph.meresse@gmail.com
+					.photos.col-lg-4.col-lg-offset-2
+						img(src="/img/Elliott_Muenier.png", style="height=100px;width=100px;", alt="Elliott Muenier").img-circle
+						h2 Elliott Muenier
+						p.
+							Facebook : emuenier<br />
+							Twitter : @ElliottMuenier
+					.photos.col-lg-4
+						img(src="/img/Toutel_Ntatla.png", alt="Toutel Ntatla").img-circle
+						h2 Toutel Ntatla
+						p.
+							Email : thomas.benouali@laposte.net
+		.colorju
+			.container.col-lg-3
+				img(src="/img/bootstrap.png")
+			.container.col-lg-3
+				img(src="/img/jade.png")
+			.container.col-lg-3
+				img(src="/img/jquery.png")
+			.container.col-lg-3
+				img(src="/img/nodejs.png")
+		include inc/script
+		script.
+			var jumboHeight = $('.jumbotron').outerHeight();
+			function parallax(){
+				var scrolled = $(window).scrollTop();
+				$('.bg').css('height', (jumboHeight-scrolled) + 'px');
+			}
+			$(window).scroll(function(e){
+				parallax();
+			});

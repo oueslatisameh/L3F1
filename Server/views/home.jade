@@ -1,0 +1,16 @@
+doctype
+html
+	include inc/head
+	body
+		include inc/header
+		.jumbotron
+			h1 Bienvenue sur ScanOID!
+			.container
+				span ScanOID est une application web et android
+				br
+				br
+				.container.btn-group.col-lg-6.col-xs-12
+					a(href="/registration", role="button").btn.btn-success.btn-lg.col-xs-12.col-lg-4  S'inscrire
+					a(href="/login", role="button").btn.btn-warning.btn-lg.col-xs-12.col-lg-4 Se connecter 
+					a(href="/", role="button").btn.btn-danger.btn-lg.col-xs-12.col-lg-4 Application Android
+		include inc/script

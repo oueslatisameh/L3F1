@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>jquery-product.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="Chart.min.html">
+                Chart.min.js
+              </a>
+            
+              
+              <a class="source" href="bootstrap-sidebar.html">
+                bootstrap-sidebar.js
+              </a>
+            
+              
+              <a class="source" href="bootstrap.html">
+                bootstrap.js
+              </a>
+            
+              
+              <a class="source" href="bootstrap.min.html">
+                bootstrap.min.js
+              </a>
+            
+              
+              <a class="source" href="holder.html">
+                holder.js
+              </a>
+            
+              
+              <a class="source" href="jquery-1.3.2.min.html">
+                jquery-1.3.2.min.js
+              </a>
+            
+              
+              <a class="source" href="jquery-account.html">
+                jquery-account.js
+              </a>
+            
+              
+              <a class="source" href="jquery-admin.html">
+                jquery-admin.js
+              </a>
+            
+              
+              <a class="source" href="jquery-barcode.html">
+                jquery-barcode.js
+              </a>
+            
+              
+              <a class="source" href="jquery-card.html">
+                jquery-card.js
+              </a>
+            
+              
+              <a class="source" href="jquery-faddress.html">
+                jquery-faddress.js
+              </a>
+            
+              
+              <a class="source" href="jquery-list.html">
+                jquery-list.js
+              </a>
+            
+              
+              <a class="source" href="jquery-lookingforproduct.html">
+                jquery-lookingforproduct.js
+              </a>
+            
+              
+              <a class="source" href="jquery-map.html">
+                jquery-map.js
+              </a>
+            
+              
+              <a class="source" href="jquery-product.html">
+                jquery-product.js
+              </a>
+            
+              
+              <a class="source" href="jquery-registration.html">
+                jquery-registration.js
+              </a>
+            
+              
+              <a class="source" href="jquery.min.html">
+                jquery.min.js
+              </a>
+            
+              
+              <a class="source" href="sha1.html">
+                sha1.js
+              </a>
+            
+              
+              <a class="source" href="validator.min.html">
+                validator.min.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>jquery-product.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <table border="1">
+<tr>
+    <th>contenu dans la page </th> <th><b>products.jade</b></th>
+</tr>
+</table>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> numberall = <span class="hljs-number">16</span>;
+<span class="hljs-keyword">var</span> lists = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p><b>postProduct</b> : fais une requête AJAX pour ajouter un produit dans une lsite de courses<br />
+<small>fais appel à la route POST <a href="list.html"><b>/list/:name/product/:product</b></a></small></p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>name</b> : nom de la marque</li>
+    <li><b>ean</b> : code EAN du produit</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : fermeture de la fenêtre modale</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">postproduct</span><span class="hljs-params">(name, ean)</span> {</span>
+	$.ajax({
+		url : <span class="hljs-string">'/list/'</span> + name.replace(<span class="hljs-regexp">/ /g</span>, <span class="hljs-string">'_'</span>) + <span class="hljs-string">'/product/'</span> + ean,
+		type : <span class="hljs-string">'POST'</span>,
+		dataType : <span class="hljs-string">"json"</span>,
+		complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+			json = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText).registered; <span class="hljs-comment">// parsage de la réponse</span>
+			<span class="hljs-keyword">if</span> (result == <span class="hljs-string">'success'</span> &amp;&amp; json == <span class="hljs-string">'success'</span>) {
+				$(<span class="hljs-string">"button[name='"</span> + ean + <span class="hljs-string">"']"</span>).popover(<span class="hljs-string">'hide'</span>);
+			}
+		}
+	});
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Ajout d’un popover à chaque élément de la liste</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">popoverfunc</span><span class="hljs-params">()</span> {</span>
+	$(<span class="hljs-string">'.lol'</span>).each(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(index)</span> {</span>
+		<span class="hljs-keyword">var</span> ident = $(<span class="hljs-keyword">this</span>).attr(<span class="hljs-string">'name'</span>);
+		$(<span class="hljs-keyword">this</span>).popover({
+			title : <span class="hljs-string">'Ajouter dans : '</span>,
+			trigger : <span class="hljs-string">"click"</span>,
+			html : <span class="hljs-literal">true</span>,
+			placement : <span class="hljs-string">'right'</span>,
+			content : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+				<span class="hljs-keyword">var</span> test = $(<span class="hljs-string">'&lt;div&gt;&lt;/div&gt;'</span>).addClass(<span class="hljs-string">'list-group'</span>);
+				<span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; lists.length; ++i) {
+					test.append($(<span class="hljs-string">'&lt;a&gt;&lt;/a&gt;'</span>).addClass(<span class="hljs-string">'list-group-item'</span>)
+						.attr(<span class="hljs-string">'onClick'</span>, <span class="hljs-string">'postproduct(\''</span>+ lists[i].name + <span class="hljs-string">'\', \''</span> + ident + <span class="hljs-string">'\')'</span>)
+						.attr(<span class="hljs-string">'href'</span>, <span class="hljs-string">'#'</span>).html(lists[i].name));
+				}
+				<span class="hljs-keyword">return</span> (test.html());
+			}
+		});
+	});
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p><b>fulists</b> : fais une requête AJAX pour récupérer les noms des listes de courses<br />
+<small>fais appel à la route GET <a href="list.html"><b>/listname</b></a></small></p>
+<ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : ajout des noms dans un tableau</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fulists</span><span class="hljs-params">()</span> {</span>
+	$.ajax({
+		url : <span class="hljs-string">'/listname/'</span>,
+		type : <span class="hljs-string">'GET'</span>,
+		dataType : <span class="hljs-string">"json"</span>,
+		complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+			json = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText);
+			<span class="hljs-keyword">if</span> (result == <span class="hljs-string">'success'</span> &amp;&amp; json.registered == <span class="hljs-string">'success'</span>) {
+				lists = json.results;
+			}
+		}
+	});
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p><b>scrolldown</b> : fais une requête AJAX pour récupérer les prochains résultats de la recherche<br />
+<small>fais appel à la route GET <a href="product.html"><b>/productnext</b></a></small></p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>product</b> : mot recherché</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : ajout des nouveaux produits dans la liste</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scrolldown</span><span class="hljs-params">()</span> {</span>
+	$(window).scroll(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+		<span class="hljs-keyword">if</span> ($(window).scrollTop() + $(window).height() == $(document).height()) {
+			$.ajax({
+				url : <span class="hljs-string">'/productnext/'</span>,
+				type : <span class="hljs-string">'GET'</span>,
+				async : <span class="hljs-literal">false</span>, <span class="hljs-comment">// requête de façon synchrone</span>
+				data : <span class="hljs-string">"product="</span> + $(<span class="hljs-string">'h1'</span>).attr(<span class="hljs-string">'id'</span>).replace(<span class="hljs-regexp">/ /g</span>, <span class="hljs-string">'_'</span>) + <span class="hljs-string">"&amp;number="</span> + numberall, <span class="hljs-comment">// données envoyées</span>
+				complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+					<span class="hljs-keyword">if</span> (result == <span class="hljs-string">'success'</span>) {
+						numberall += <span class="hljs-number">16</span>; <span class="hljs-comment">// indice des produits de la liste</span>
+						$(<span class="hljs-string">'div#containerall'</span>).append(xhr.responseText); <span class="hljs-comment">// ajout automatique du code HTML envoyé du serveur</span>
+						popoverfunc();
+					}
+				}
+			});
+		}
+	});
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

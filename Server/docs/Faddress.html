@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Faddress.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="Faddress.html">
+                Faddress.js
+              </a>
+            
+              
+              <a class="source" href="Fshop.html">
+                Fshop.js
+              </a>
+            
+              
+              <a class="source" href="about.html">
+                about.js
+              </a>
+            
+              
+              <a class="source" href="account.html">
+                account.js
+              </a>
+            
+              
+              <a class="source" href="admin.html">
+                admin.js
+              </a>
+            
+              
+              <a class="source" href="card.html">
+                card.js
+              </a>
+            
+              
+              <a class="source" href="home.html">
+                home.js
+              </a>
+            
+              
+              <a class="source" href="list.html">
+                list.js
+              </a>
+            
+              
+              <a class="source" href="login.html">
+                login.js
+              </a>
+            
+              
+              <a class="source" href="logout.html">
+                logout.js
+              </a>
+            
+              
+              <a class="source" href="product.html">
+                product.js
+              </a>
+            
+              
+              <a class="source" href="recovery.html">
+                recovery.js
+              </a>
+            
+              
+              <a class="source" href="registration.html">
+                registration.js
+              </a>
+            
+              
+              <a class="source" href="shop.html">
+                shop.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>Faddress.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <table border="1">
+<tr>
+    <th>routes ajoutées dans</th> <th><a href="app.html"><b>app.js</b></a></th>
+</tr>
+</table>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Route GET <b>/favorite/address</b><br />
+<small>route renvoyant les adresses favorites de l’utilisateur</small>  </p>
+<ul>
+<li>sortie</li>
+<ul>
+    <li><b>document JSON</b> contenant les informations pour l’application</li>
+    <li><b>Page HTML</b> : avec les informations pour le navigateur</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.getFaddress = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getFaddress</span><span class="hljs-params">(config, pg, err)</span> {</span>
+	<span class="hljs-keyword">return</span> (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res)</span> {</span>
+		<span class="hljs-keyword">var</span> user = req.get(<span class="hljs-string">'user-agent'</span>);
+		<span class="hljs-keyword">var</span> queryFaddress = <span class="hljs-string">'SELECT house_num, road, postcode, town, building, residential, suburb, town_district, county, '</span> +
+		<span class="hljs-string">'state, longitude, latitude FROM favorite_address where user_email = \''</span> + res.get(<span class="hljs-string">'user'</span>) + <span class="hljs-string">'\';'</span>;
+		pg(queryFaddress, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, result)</span> {</span>
+			<span class="hljs-keyword">if</span> (err) {res.json({registered : <span class="hljs-string">"failure"</span>, err : [config.stringError.serverError]});}
+			<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (user == <span class="hljs-string">'scanoid/1.0'</span>) {
+				res.json({registered : <span class="hljs-string">"success"</span>, results : result.rows});
+			} <span class="hljs-keyword">else</span> {
+				res.render(<span class="hljs-string">'favoriteaddress'</span>,  {
+					web : config.web, 
+					co : res.get(<span class="hljs-string">"co"</span>), 
+					results : result.rows, 
+					element : {
+						house_num : <span class="hljs-string">"numéro"</span>,
+						road : <span class="hljs-string">"rue"</span>,
+						postcode : <span class="hljs-string">"code postal"</span>,
+						town : <span class="hljs-string">"ville"</span>,
+						suburb : <span class="hljs-string">"quartier"</span>,
+						town_district : <span class="hljs-string">"arrondissement"</span>,
+					}
+				});
+			}
+		});
+	});
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Route DELETE <b>/favorite/address:road-:town-:postcode</b><br />
+<small>route supprimant une adresse favorite</small><br />
+<small>route appelé dans <a href="jquery-faddress.html"><b>jquery-faddress.js</b></a></small></p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>road</b> : nom de la rue</li>
+    <li><b>town</b> : nom de la ville</li>
+    <li><b>postcode</b> : code postal de l’addresse</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>document JSON</b> : confirmation de la requête</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.delFaddress = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">delFaddress</span><span class="hljs-params">(config, pg, err)</span> {</span>
+	<span class="hljs-keyword">return</span> (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res)</span> {</span>
+		<span class="hljs-keyword">var</span> user = req.get(<span class="hljs-string">'user-agent'</span>);
+		req.params.road = req.params.road.replaceBadCharacter().trim().replace(<span class="hljs-regexp">/\+/g</span>, <span class="hljs-string">"-"</span>);
+		req.params.postcode = req.params.postcode.replaceBadCharacter().trim();
+		req.params.town = req.params.town.replaceBadCharacter().trim();		
+		<span class="hljs-keyword">var</span> queryFaddress = <span class="hljs-string">'DELETE FROM favorite_address where user_email = \''</span> + res.get(<span class="hljs-string">'user'</span>) + <span class="hljs-string">'\''</span> + 
+			<span class="hljs-string">' AND road = \''</span> + req.params.road + <span class="hljs-string">'\''</span> + 
+			<span class="hljs-string">' AND postcode = \''</span> + req.params.postcode + <span class="hljs-string">'\''</span> + 
+			<span class="hljs-string">' AND town = \''</span> + req.params.town + <span class="hljs-string">'\''</span> + 
+			<span class="hljs-string">';'</span>;
+		pg(queryFaddress, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, result)</span> {</span>
+			<span class="hljs-keyword">if</span> (err) {res.json({registered : <span class="hljs-string">"failure"</span>, err : [config.stringError.serverError]});}
+			<span class="hljs-keyword">else</span> {
+				res.json({registered : <span class="hljs-string">"success"</span>});
+			}
+		});
+	});
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Route POST <b>/favorite/address</b><br />
+<small>route permettant la création d’une nouvelle addresse favorite</small><br />
+<small>route appelé dans <a href="jquery-faddress.html"><b>jquery-faddress.js</b></a></small>  </p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>address</b> : nom de la rue avec le numéro</li>
+    <li><b>town</b> : nom de la ville</li>
+    <li><b>postcode</b> : code postal de l’addresse</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>document JSON</b> : confirmation de la requête</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.postFaddress = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">postFaddress</span><span class="hljs-params">(config, query_nominatim, pg,err)</span> {</span>
+	<span class="hljs-keyword">return</span> (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res)</span> {</span>
+		<span class="hljs-keyword">var</span> user = req.get(<span class="hljs-string">'user-agent'</span>);
+		<span class="hljs-keyword">var</span> epic = {
+			road : req.body.address.replaceBadCharacter().trim(),
+			town : req.body.town.replaceBadCharacter().trim(),
+			postcode : req.body.postcode.replaceBadCharacter().trim(),
+			email : res.get(<span class="hljs-string">'user'</span>)
+		};
+		query_nominatim(epic, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, queryAddress)</span> {</span> <span class="hljs-comment">//appel fait à nominatim pour avoir des informations sur la localisation</span>
+			<span class="hljs-keyword">if</span> (!err) {
+				pg(queryAddress, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, resultat)</span> {</span>
+					<span class="hljs-keyword">if</span> (err) {res.json({registered : <span class="hljs-string">"failure"</span>});}
+					<span class="hljs-keyword">else</span> {res.json({registered : <span class="hljs-string">"success"</span>, results : epic});}
+				});
+			} <span class="hljs-keyword">else</span> {res.json({registered : <span class="hljs-string">"failure"</span>});}
+		});
+	});
+};</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,0 +1,94 @@
+doctype
+html
+	include inc/head
+	body
+		include inc/header
+		script(src="/js/sha1.js")
+		include inc/script
+		script.
+			function recovery() {
+				var value = $("[name=\"emailRecovery\"]").val();
+				$.ajax({
+					url : "/recovery/",
+					type : "POST",
+					data : {email : value},
+					dataType : "json",
+					complete : function(xhr, result) {
+						json = JSON.parse(xhr.responseText);
+						if (result === "success" && json.registered === "success") {
+							$('#myModal').modal('hide');
+							setTimeout(function() {
+								$("div#jumb").prepend(
+									$("<div class=\"alert alert-success alert-dismissable\"></div>")
+										.html("un email a été envoyé à votre adresse !")
+										.prepend(
+											$("<button type=\"button\" data-dismiss=\"alert\" aria-hidden=\"true\" class=\"close\"></button>")
+												.html("&times;")
+									)
+								);
+							}, 1000);
+						} else {
+							$('#myModal').modal('hide');
+							setTimeout(function() {
+								$("div#jumb").prepend(
+									$("<div class=\"alert alert-danger alert-dismissable\"></div>")
+										.html(json.err[0])
+										.prepend(
+											$("<button type=\"button\" data-dismiss=\"alert\" aria-hidden=\"true\" class=\"close\"></button>")
+												.html("&times;")
+									)
+								);
+							},1000);							
+						}
+					}
+				});
+			}
+			function setVisible() {
+				if ($('form#siteW').css('display') == 'none')
+					$('form#siteW').css("display", "block");
+				else
+					$('form#siteW').css("display", "none");				
+			}
+			function test() {
+				$('input#password').val(CryptoJS.SHA1($('input#password').val()));
+				$(this).closest('form').submit();
+			}
+		.jumbotron#jumb
+			if err 
+				.alert.alert-warning.alert-dismissable
+					button(type="button", data-dismiss="alert", aria-hidden="true").close &times;
+					strong Erreur!
+					each error in err
+						div= error
+			h1 Connexion
+			br
+		.container.col-lg-3
+			a(href="#").btn.btn-primary
+				| Facebook  
+				span.glyphicon.glyphicon-link
+			a(onClick="setVisible();").btn.btn-success
+				| Site Web  
+				span.glyphicon.glyphicon-arrow-right
+		.container.col-lg-3
+			form(style="display:none", role="form", action="/login", method="post").form-horizontal#siteW
+				.form-group
+					.col-lg-12
+						input(type="text", name="email", placeholder="Adresse Email").form-control#email
+				.form-group
+					.col-lg-12
+						input(type="password", name="password", placeholder="Mot de passe").form-control#password
+				a(href="#",data-toggle="modal", data-target="#myModal") vous avez oublié votre mot de passe ?
+				button(onClick="test();").btn.btn-success.btn-block Se connecter
+			div(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")#myModal.modal.fade: .modal-dialog: .modal-content
+				.modal-header
+					button(type="button", data-dismiss="modal", aria-hidden="true").close &times;
+					h4.modal-title Mot de passe perdu
+				.modal-body
+					p.
+						Un email contenant un nouveau mot de passe sera envoyé à l'adresse
+						que vous avez entré lors de votre inscription.
+						Vous pourrez ensuite le modifier dans la page profil.
+					input(type="text", name="emailRecovery", placeholder="votre adresse email")
+				.modal-footer
+					button(type="button", data-dismiss="modal").btn.btn-default Fermer
+					button(type="button", onclick="recovery();").btn.btn-warning Envoyer

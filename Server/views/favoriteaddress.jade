@@ -1,0 +1,51 @@
+doctype
+html
+	include inc/head
+	link(rel="stylesheet", type="text/css", href="/leaflet/leaflet.css")
+	style.
+		#map {
+			height: 450px;
+		} .blob {
+			color : #47A447
+		}
+	body
+		include inc/header
+		.container.col-lg-4#jumb
+			.list-group
+				.list-group-item.col-lg-12
+					.list-group-item-text
+						.list-group-item-heading
+							h4.blob Ajouter une nouvelle carte
+							br
+						.container.col-lg-7
+							input(type="text", name="address", placeholder="addresse").form-control
+							input(type="text", name="town", placeholder="ville").form-control
+							input(type="text", name="postcode", placeholder="code postal").form-control
+						.container.col-lg-5
+							span(onClick="addaddr();").btn.btn-success.btn-sm
+								| Sauvegarder  
+								span.glyphicon.glyphicon-save
+				- each res, i in results
+					div(id="addr#{i}").list-group-item.col-lg-12
+						.list-group-item-text
+							.container.col-lg-8
+								- each val, key in element
+									if (res[key] !== null)
+										b.blob= val
+										| : #{res[key]}
+										br
+							.container.btn-group.col-lg-4
+								span(onClick="affichMarker(#{res.longitude}, #{res.latitude})").btn.btn-success.btn-sm: span.glyphicon.glyphicon-search
+								span(onCLick="supaddr(\'#{res.road}\',\'#{res.town}\',\'#{res.postcode}\', \'#{i}\');").btn.btn-danger.btn-sm: span.glyphicon.glyphicon-remove
+		.container.col-lg-8
+			#map
+		include inc/script
+		script(type="text/javascript", src="/leaflet/leaflet.js")
+		script(type="text/javascript", src="/js/validator.min.js")
+		script(type="text/javascript", src="/js/jquery-faddress.js")
+		script.
+			$(document).ready(function() {
+				if(navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(initmap);
+				}
+			});

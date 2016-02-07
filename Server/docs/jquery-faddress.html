@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>jquery-faddress.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="Chart.min.html">
+                Chart.min.js
+              </a>
+            
+              
+              <a class="source" href="bootstrap-sidebar.html">
+                bootstrap-sidebar.js
+              </a>
+            
+              
+              <a class="source" href="bootstrap.html">
+                bootstrap.js
+              </a>
+            
+              
+              <a class="source" href="bootstrap.min.html">
+                bootstrap.min.js
+              </a>
+            
+              
+              <a class="source" href="holder.html">
+                holder.js
+              </a>
+            
+              
+              <a class="source" href="jquery-1.3.2.min.html">
+                jquery-1.3.2.min.js
+              </a>
+            
+              
+              <a class="source" href="jquery-account.html">
+                jquery-account.js
+              </a>
+            
+              
+              <a class="source" href="jquery-admin.html">
+                jquery-admin.js
+              </a>
+            
+              
+              <a class="source" href="jquery-barcode.html">
+                jquery-barcode.js
+              </a>
+            
+              
+              <a class="source" href="jquery-card.html">
+                jquery-card.js
+              </a>
+            
+              
+              <a class="source" href="jquery-faddress.html">
+                jquery-faddress.js
+              </a>
+            
+              
+              <a class="source" href="jquery-list.html">
+                jquery-list.js
+              </a>
+            
+              
+              <a class="source" href="jquery-lookingforproduct.html">
+                jquery-lookingforproduct.js
+              </a>
+            
+              
+              <a class="source" href="jquery-map.html">
+                jquery-map.js
+              </a>
+            
+              
+              <a class="source" href="jquery-product.html">
+                jquery-product.js
+              </a>
+            
+              
+              <a class="source" href="jquery-registration.html">
+                jquery-registration.js
+              </a>
+            
+              
+              <a class="source" href="jquery.min.html">
+                jquery.min.js
+              </a>
+            
+              
+              <a class="source" href="sha1.html">
+                sha1.js
+              </a>
+            
+              
+              <a class="source" href="validator.min.html">
+                validator.min.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>jquery-faddress.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <table border="1">
+<tr>
+    <th>contenu dans la page </th> <th><b>favoriteaddress.jade</b></th>
+</tr>
+</table>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> longitude;
+<span class="hljs-keyword">var</span> latitude;
+<span class="hljs-keyword">var</span> marker = <span class="hljs-literal">null</span>;
+<span class="hljs-keyword">var</span> map;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p><b>initmap</b> : initialise la carte leaflet en faisant appel au service Nominatim<br /></p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>position</b> : position actuelle de l’utilisateur</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : création de la carte</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">initmap</span><span class="hljs-params">(position)</span> {</span>
+	longitude = position.coords.longitude;
+	latitude = position.coords.latitude;
+	map = L.map(<span class="hljs-string">'map'</span>).setView([latitude, longitude], <span class="hljs-number">16</span>); <span class="hljs-comment">// création de la carte</span>
+	L.tileLayer(<span class="hljs-string">'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'</span>, { <span class="hljs-comment">// réception des tuiles</span>
+		attribution: <span class="hljs-string">'Map data &amp;copy; &lt;a href="http://openstreetmap.org"&gt;OpenStreetMap&lt;/a&gt; contributors, &lt;a href="http://creativecommons.org/licenses/by-sa/2.0/"&gt;CC-BY-SA&lt;/a&gt;, Imagery © &lt;a href="http://cloudmade.com"&gt;CloudMade&lt;/a&gt;'</span>,
+		maxZoom: <span class="hljs-number">18</span> <span class="hljs-comment">// zoom de la carte au début</span>
+	}).addTo(map); <span class="hljs-comment">// ajout des tuiles à la carte</span>
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p><b>affichMarker</b> : affiche sur la carte le marqueur à la position d’une addresse favorite et déplace
+le centre de la carte à cette endroit<br /></p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>lat</b> : lat</li>
+    <li><b>lon</b> : longitude</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : création du marqueur et changement de la position de la carte</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">affichMarker</span><span class="hljs-params">(lon, lat)</span> {</span>
+	<span class="hljs-keyword">if</span> (marker === <span class="hljs-literal">null</span>) {
+		marker = L.marker([lat, lon]); <span class="hljs-comment">// création du marker</span>
+		marker.addTo(map); <span class="hljs-comment">// ajout à la carte</span>
+		map.panTo(<span class="hljs-keyword">new</span> L.LatLng(lat, lon)); <span class="hljs-comment">// translation du centre de la carte</span>
+	} <span class="hljs-keyword">else</span> {
+		map.removeLayer(marker); <span class="hljs-comment">// suppression du dernier marker ajouté</span>
+		marker = L.marker([lat, lon]);
+		marker.addTo(map);
+		map.panTo(<span class="hljs-keyword">new</span> L.LatLng(lat, lon));
+	}
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p><b>supaddr</b> : fais une requête AJAX pour supprimer une adresse favorite de l’utilisateur<br />
+<small>fais appel à la route DELETE <a href="Faddress.html"><b>/favorite/address:road-:town-:postcode</b></a></small></p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>address</b> : adresse</li>
+    <li><b>town</b> : ville</li>
+    <li><b>postcode</b> : code postal</li>
+    <li><b>id</b> : identifiant de l’élément dans la liste</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : suppression de l’élément dans la liste</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">supaddr</span><span class="hljs-params">(address, town, postcode, id)</span> {</span>
+	address = address.replace(<span class="hljs-regexp">/ /g</span>, <span class="hljs-string">'_'</span>);	<span class="hljs-comment">// formatage des champs </span>
+	town = town.replace(<span class="hljs-regexp">/ /g</span>, <span class="hljs-string">'_'</span>);			<span class="hljs-comment">// pour l'envoi de la </span>
+	postcode = postcode.replace(<span class="hljs-regexp">/ /g</span>, <span class="hljs-string">'_'</span>);	<span class="hljs-comment">// requête AJAX</span>
+	$.ajax({
+		url : <span class="hljs-string">'/favorite/address/'</span> + address.replace(<span class="hljs-regexp">/\-/g</span>, <span class="hljs-string">"+"</span>) + <span class="hljs-string">"-"</span> + town + <span class="hljs-string">"-"</span> + postcode,
+		type : <span class="hljs-string">'DELETE'</span>, <span class="hljs-comment">// type de requête HTTP</span>
+		dataType : <span class="hljs-string">"json"</span>, <span class="hljs-comment">// type de données attendu</span>
+		complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+			json = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText);
+			<span class="hljs-keyword">if</span> (result == <span class="hljs-string">'success'</span> &amp;&amp; json.registered == <span class="hljs-string">'success'</span>) {
+				$(<span class="hljs-string">"div#addr"</span> + id).remove();
+			}
+		}
+	});
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p><b>addaddr</b> : fais une requête AJAX pour ajouter une adresse favorite<br />
+<small>fais appel à la route POST <a href="Faddress.html"><b>/favorite/address</b></a></small></p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>address</b> : adresse</li>
+    <li><b>town</b> : ville</li>
+    <li><b>postcode</b> : code postal</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : rechargement de la page</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addaddr</span><span class="hljs-params">()</span> {</span>
+	<span class="hljs-keyword">var</span> address = $(<span class="hljs-string">"input[name='address']"</span>);	<span class="hljs-comment">// récupération des </span>
+	<span class="hljs-keyword">var</span> town = $(<span class="hljs-string">"input[name='town']"</span>);			<span class="hljs-comment">// champs entrés par </span>
+	<span class="hljs-keyword">var</span> postcode = $(<span class="hljs-string">"input[name='postcode']"</span>);	<span class="hljs-comment">// l'utilisateur</span>
+	<span class="hljs-keyword">if</span> (address.val() === <span class="hljs-string">''</span> || town.val() === <span class="hljs-string">''</span> || postcode.val() === <span class="hljs-string">''</span>
+		|| !validator.isAlpha(town.val()) || !validator.isNumeric(postcode.val())) {
+		$(<span class="hljs-string">"div#jumb"</span>).prepend(
+			$(<span class="hljs-string">"&lt;div class=\"alert alert-danger alert-dismissable\"&gt;&lt;/div&gt;"</span>)
+			.html(<span class="hljs-string">"les informations entrés sont erronées ou manquantes"</span>)
+				.prepend(
+					$(<span class="hljs-string">"&lt;button type=\"button\" data-dismiss=\"alert\" aria-hidden=\"true\" class=\"close\"&gt;&lt;/button&gt;"</span>)
+						.html(<span class="hljs-string">"&amp;times;"</span>)
+				)
+		);
+		<span class="hljs-keyword">return</span>;
+	}
+	$.ajax({
+		url : <span class="hljs-string">'/favorite/address/'</span>,
+		type : <span class="hljs-string">'POST'</span>,
+		dataType : <span class="hljs-string">"json"</span>,
+		data : {
+			address : address.val().replace(<span class="hljs-regexp">/ /g</span>, <span class="hljs-string">'_'</span>),
+			town : town.val().replace(<span class="hljs-regexp">/ /g</span>, <span class="hljs-string">'_'</span>),
+			postcode : postcode.val().replace(<span class="hljs-regexp">/ /g</span>, <span class="hljs-string">'_'</span>)
+		},
+		complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+			json = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText); <span class="hljs-comment">// parsage de la réponse</span>
+			<span class="hljs-keyword">if</span> (result == <span class="hljs-string">'success'</span> &amp;&amp; json.registered == <span class="hljs-string">'success'</span>) {
+				document.location.reload(<span class="hljs-literal">true</span>); <span class="hljs-comment">// rechargement de la page</span>
+			}
+		}
+	});
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

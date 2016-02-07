@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/fond"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_weight=".40">
+
+            <ImageView
+                android:id="@+id/image_accueil"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/normal_padding"
+                android:src="@drawable/ic_barcode_v2" />
+
+       </LinearLayout>
+
+       <LinearLayout
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_weight=".60"
+            android:orientation="vertical" >
+
+        <TextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/string_message_accueil"
+         android:textColor="@color/white"
+         android:layout_gravity="center"
+         android:textSize="16sp"
+         android:layout_marginTop="35sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical" >
+
+             <ProgressBar
+                 android:id="@+id/progressBar"
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 android:layout_gravity="center"
+                 android:layout_marginTop="100dp"
+                 android:visibility="gone" />
+
+             <LinearLayout
+                 android:id="@+id/accueil_boutons"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:orientation="vertical" >
+
+               <Button
+                   android:id="@+id/button_connection"
+                   style="@style/buttonStyle"
+                   android:layout_width="240dp"
+                   android:layout_height="60dp"
+                   android:layout_gravity="center"
+                   android:layout_marginTop="25sp"
+                   android:background="@drawable/mybutton"
+                   android:text="@string/string_connection"
+                   android:textSize="16sp"/>
+
+               <Button
+                   android:id="@+id/button_creation"
+                   style="@style/buttonStyle"
+                   android:layout_width="240dp"
+                   android:layout_height="60dp"
+                   android:layout_gravity="center"
+                   android:layout_marginTop="25sp"
+                   android:background="@drawable/mybutton"
+                   android:text="@string/string_creer_un_compte"
+                   android:textSize="16sp"/>
+
+               </LinearLayout>
+
+             </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>

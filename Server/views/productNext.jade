@@ -1,0 +1,17 @@
+for product, i in results
+	div(id="product#{product.ean}").container.col-lg-3
+		.thumbnail
+			img(src="/productImage/#{product.img}/#{product.ean}.jpg", onerror="this.src='/img/vasi.png'", alt="Responsive image", data-toggle="tooltip", data-placement="left" title="#{product.name}").img-responsive
+			.caption
+				- if (product.name.length > 22)
+					h5= (product.name).toLowerCase().substring(0, 22) + "..."
+				- else
+					h5= product.name.toLowerCase()
+				p
+					small= product.brand_name
+				.row
+					.btn-group.col-lg-12
+						a(href="/product/?product=#{product.ean}", type="button").btn.btn-success.col-lg-6 Voir 
+							span.glyphicon.glyphicon-search
+						button(type="button", name="#{product.ean}" id="#{product.ean}").btn.btn-info.col-lg-6.lol Ajouter 
+							span.glyphicon.glyphicon-list-alt

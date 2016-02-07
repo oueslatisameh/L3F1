@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   xmlns:tools="http://schemas.android.com/tools"
+   android:layout_width="match_parent"
+   android:layout_height="match_parent"
+   android:background="@color/fond"
+   android:orientation="vertical" >
+   
+     <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bar_height"
+         android:background="@drawable/border"
+        android:orientation="horizontal" >
+
+     <LinearLayout
+        android:id="@+id/menu"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="horizontal" >
+    
+          <ImageButton
+             android:id="@+id/button_menu"
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             style="@style/buttonStyle"
+             android:layout_gravity="center_vertical"
+             android:src="@drawable/ic_action_overflow"
+             android:contentDescription="@string/string_drawable_menu_overflow" />  
+      
+          <View
+             android:layout_width="1dp"
+             android:layout_height="match_parent"
+             android:layout_gravity="center_vertical"
+             android:background="@color/white" />
+      
+          <TextView 
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_gravity="center_vertical"
+             android:layout_marginLeft="10dp"
+             android:textSize="@dimen/bar_editText_text_size"
+             android:textColor="@color/white"
+             android:text="@string/string_cartes_fidelite" />
+          
+          </LinearLayout>
+      
+      <ImageButton
+         android:id="@+id/button_add"
+         android:layout_height="wrap_content"
+         android:layout_width="wrap_content"
+         android:layout_marginRight="5dp"
+         android:layout_marginTop="5dp"
+         style="@style/buttonStyle"
+         android:src="@drawable/ic_action_new"
+         android:layout_alignRight="@id/menu"
+         android:contentDescription="@string/string_drawable_menu_add" />
+      
+    </RelativeLayout>
+    
+    <ProgressBar
+       android:id="@+id/progressBar"
+       android:layout_height="wrap_content"
+       android:layout_width="wrap_content"
+       android:layout_gravity="center"
+       android:layout_marginTop="160dp" />
+
+    <GridView
+       android:id="@+id/card_grid_view"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:layout_marginTop="10dp"
+       android:numColumns="auto_fit"
+       android:columnWidth="90dp"
+       android:horizontalSpacing="10dp"
+       android:verticalSpacing="10dp"
+       android:gravity="center"
+       android:stretchMode="columnWidth" />
+    
+    <TextView
+         android:id="@+id/error_textview"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_weight="0.0"
+         android:padding="10dp"
+         android:background="@color/custom_red"
+         android:textColor="#0000ff"
+         android:visibility="gone" />
+    
+</LinearLayout>

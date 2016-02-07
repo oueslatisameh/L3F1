@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>jquery-list.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="Chart.min.html">
+                Chart.min.js
+              </a>
+            
+              
+              <a class="source" href="bootstrap-sidebar.html">
+                bootstrap-sidebar.js
+              </a>
+            
+              
+              <a class="source" href="bootstrap.html">
+                bootstrap.js
+              </a>
+            
+              
+              <a class="source" href="bootstrap.min.html">
+                bootstrap.min.js
+              </a>
+            
+              
+              <a class="source" href="holder.html">
+                holder.js
+              </a>
+            
+              
+              <a class="source" href="jquery-1.3.2.min.html">
+                jquery-1.3.2.min.js
+              </a>
+            
+              
+              <a class="source" href="jquery-account.html">
+                jquery-account.js
+              </a>
+            
+              
+              <a class="source" href="jquery-admin.html">
+                jquery-admin.js
+              </a>
+            
+              
+              <a class="source" href="jquery-barcode.html">
+                jquery-barcode.js
+              </a>
+            
+              
+              <a class="source" href="jquery-card.html">
+                jquery-card.js
+              </a>
+            
+              
+              <a class="source" href="jquery-faddress.html">
+                jquery-faddress.js
+              </a>
+            
+              
+              <a class="source" href="jquery-list.html">
+                jquery-list.js
+              </a>
+            
+              
+              <a class="source" href="jquery-lookingforproduct.html">
+                jquery-lookingforproduct.js
+              </a>
+            
+              
+              <a class="source" href="jquery-map.html">
+                jquery-map.js
+              </a>
+            
+              
+              <a class="source" href="jquery-product.html">
+                jquery-product.js
+              </a>
+            
+              
+              <a class="source" href="jquery-registration.html">
+                jquery-registration.js
+              </a>
+            
+              
+              <a class="source" href="jquery.min.html">
+                jquery.min.js
+              </a>
+            
+              
+              <a class="source" href="sha1.html">
+                sha1.js
+              </a>
+            
+              
+              <a class="source" href="validator.min.html">
+                validator.min.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>jquery-list.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <table border="1">
+<tr>
+    <th>contenu dans la page </th> <th><b>list.jade</b></th>
+</tr>
+</table>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> varNameListChange;
+<span class="hljs-keyword">var</span> varNameListDelete;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p><b>supProduct</b> : fais une requête AJAX pour supprimer un produit d’une liste de l’utilisateur<br />
+<small>fais appel à la route DELETE <a href="list.html"><b>/list/:name/product/:product</b></a></small></p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>name</b> : nom de la liste</li>
+    <li><b>ean</b> : code EAN du produit</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : suppression de l’élément dans la liste de courses</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">supProduct</span><span class="hljs-params">(name, ean)</span> {</span>
+	$.ajax({
+		url : <span class="hljs-string">'/list/'</span> + name.replace(<span class="hljs-regexp">/ /g</span>, <span class="hljs-string">'_'</span>) + <span class="hljs-string">'/product/'</span> + ean,
+		type : <span class="hljs-string">'DELETE'</span>,
+		dataType : <span class="hljs-string">"json"</span>,
+		complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+			json = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText);
+			<span class="hljs-keyword">if</span> (result == <span class="hljs-string">'success'</span> &amp;&amp; json.registered == <span class="hljs-string">'success'</span>) {
+				$(<span class="hljs-string">"div#product"</span> + name + <span class="hljs-string">"-"</span> + ean).remove();
+			}
+		}
+	});
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p><b>supList</b> : fais une requête AJAX pour supprimer une liste de l’utilisateur<br />
+<small>fais appel à la route DELETE <a href="list.html"><b>/list/:name</b></a></small></p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>name</b> : nom de la liste</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : suppression de la liste de courses + du lien dans la page</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">supList</span><span class="hljs-params">()</span> {</span>
+	$.ajax({
+		url : <span class="hljs-string">'/list/'</span> + varNameListDelete,
+		type : <span class="hljs-string">'DELETE'</span>, <span class="hljs-comment">// type de de requête HTTP</span>
+		dataType : <span class="hljs-string">"json"</span>, <span class="hljs-comment">// type de données attendu</span>
+		complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+			json = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText); <span class="hljs-comment">// parsage de la réponse</span>
+			<span class="hljs-keyword">if</span> (result == <span class="hljs-string">'success'</span> &amp;&amp; json.registered == <span class="hljs-string">'success'</span>) {
+				$(<span class="hljs-string">'#ModalDel'</span>).modal(<span class="hljs-string">'hide'</span>);
+				setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span> <span class="hljs-comment">// suppression apres que la fenêtre modal soit caché</span>
+					$(<span class="hljs-string">'#container'</span> + varNameListDelete).remove();
+					$(<span class="hljs-string">'#lipour'</span> + varNameListDelete).remove();
+				}, <span class="hljs-number">1000</span>);
+			}
+		}
+	});
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nameListDelete</span><span class="hljs-params">(name)</span> {</span>
+	varNameListDelete = name;
+	$(<span class="hljs-string">'#ModalDel'</span>).modal(<span class="hljs-string">'show'</span>);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p><b>changeList</b> : fais une requête AJAX pour changer le nom d’une liste<br />
+<small>fais appel à la route PUT <a href="list.html"><b>/list/:old-:ne</b></a></small></p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>old</b> : nom de la liste</li>
+    <li><b>ne</b> : nouveau nom de la liste</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : rechargement de la page</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">changeList</span><span class="hljs-params">()</span> {</span>
+	<span class="hljs-keyword">var</span> ne = $(<span class="hljs-string">'#ModalInputChange'</span>).val();
+	$.ajax({
+		url : <span class="hljs-string">'/list/'</span> + varNameListChange + <span class="hljs-string">'-'</span> + ne.replace(<span class="hljs-regexp">/ /g</span>, <span class="hljs-string">'_'</span>),
+		type : <span class="hljs-string">'PUT'</span>,
+		dataType : <span class="hljs-string">"json"</span>,
+		complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+			json = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText);
+			<span class="hljs-keyword">if</span> (result == <span class="hljs-string">'success'</span> &amp;&amp; json.registered == <span class="hljs-string">'success'</span>) {
+				document.location.reload(<span class="hljs-literal">true</span>);
+			}
+		}
+	});
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nameListChange</span><span class="hljs-params">(name)</span> {</span>
+	varNameListChange = name;
+	$(<span class="hljs-string">'#ModalChange'</span>).modal(<span class="hljs-string">'show'</span>);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p><b>refresh</b> : suppression des champs dans la fenêtre modale<br /></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">refresh</span><span class="hljs-params">()</span> {</span>
+	$(<span class="hljs-string">"#ModalSpanPut"</span>).html(<span class="hljs-string">""</span>);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p><b>addList</b> : fais une requête AJAX pour ajouter une nouvelle liste de course<br />
+<small>fais appel à la route POST <a href="list.html"><b>/list/:name</b></a></small></p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>name</b> : nom de la nouvelle liste</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : rechargement de la page</li>
+    <li><b>success</b> : affichage d’un message d’erreur dans la fenêtre modale</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addList</span><span class="hljs-params">()</span> {</span>
+	<span class="hljs-keyword">var</span> name = $(<span class="hljs-string">"#ModalInputPut"</span>).val();
+	$.ajax({
+		url : <span class="hljs-string">'/list/'</span> + name.replace(<span class="hljs-regexp">/ /g</span>, <span class="hljs-string">'_'</span>),
+		type : <span class="hljs-string">'POST'</span>,
+		dataType : <span class="hljs-string">"json"</span>,
+		complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+			json = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText);
+			<span class="hljs-keyword">if</span> (result == <span class="hljs-string">'success'</span> &amp;&amp; json.registered == <span class="hljs-string">'success'</span>) {
+				document.location.reload(<span class="hljs-literal">true</span>);
+			} <span class="hljs-keyword">else</span> {
+				$(<span class="hljs-string">"#ModalSpanPut"</span>).html(<span class="hljs-string">"erreur dans le nom"</span>);
+				$(<span class="hljs-string">"#ModalInputPut"</span>).val(<span class="hljs-string">""</span>);
+			}
+		}
+	});
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p><b>saveamount</b> : fais une requête AJAX pour changer la quantité d’un produit dans une liste de courses<br />
+<small>fais appel à la route POST <a href="list.html"><b>/list/:name/product/:product/amount/:amount</b></a></small></p>
+<ul>
+<li>paramètre</li>
+<ul>
+    <li><b>name</b> : nom de la nouvelle liste</li>
+    <li><b>ean</b> : code EAN du produit</li>
+    <li><b>amount</b> : quantité</li>
+</ul>
+<li>sortie</li>
+<ul>
+    <li><b>success</b> : affichage dans l’élément du nouveau quantité</li>
+</ul>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">saveamount</span><span class="hljs-params">(name, ean)</span> {</span>
+	<span class="hljs-keyword">var</span> input = $(<span class="hljs-string">"input#amount"</span> + name + ean);
+	<span class="hljs-keyword">if</span> (input &lt; <span class="hljs-number">1</span> || input &gt; <span class="hljs-number">50</span>) { <span class="hljs-comment">// si la quantité entrée par l'utilisateur est mauvaise changement pour 1</span>
+		input.val(<span class="hljs-number">1</span>);
+	}
+	$.ajax({
+		url : <span class="hljs-string">'/list/'</span> + name + <span class="hljs-string">'/product/'</span> + ean + <span class="hljs-string">'/amount/'</span> + input.val(), <span class="hljs-comment">// url du serveur</span>
+		type : <span class="hljs-string">'POST'</span>,
+		dataType : <span class="hljs-string">"json"</span>,
+		complete : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(xhr, result)</span> {</span>
+			json = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText);
+			<span class="hljs-keyword">if</span> (!(result == <span class="hljs-string">'success'</span> &amp;&amp; json.registered == <span class="hljs-string">'success'</span>)) {
+				input.val(<span class="hljs-number">1</span>); <span class="hljs-comment">// changement de la quantité dans l'élément de la liste de courses</span>
+			}
+		}
+	});
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

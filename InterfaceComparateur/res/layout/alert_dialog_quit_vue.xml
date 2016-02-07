@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/alertdialog_quit"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="15dip"
+    >
+
+    <LinearLayout
+        android:layout_width="260dp"
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true"
+        android:weightSum="1"
+        android:background="@drawable/border_alert_dialog">
+
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="5dp"
+            android:id="@+id/imageButton2"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/ic_croix_rouge"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Voulez-vous vraiment quitter ScanOID ?"
+            android:id="@+id/textView"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:layout_weight="0.63" />
+
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/imageButton"
+            android:layout_marginRight="45dp"
+            android:background="@drawable/ic_coche_vert"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
+
+</RelativeLayout>

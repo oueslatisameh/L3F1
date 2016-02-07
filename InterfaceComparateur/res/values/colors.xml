@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<color name="black">#000</color>
+<color name="white">#FFFFFF</color>
+<color name="custom_blue">#6699FF</color>
+<color name="custom_red">#CC2222</color>
+<color name="menu_blue">#2A6299</color>
+<color name="fond">#B2D2FF</color>
+<color name="button">#4388CC</color>
+<color name="fond_barre_menu">#336666</color>
+<color name="text">#FFFFFF</color>
+
+</resources>
